@@ -2,6 +2,7 @@
 architecture nes.cpu
 
 include "./asm/macros.asm"
+include "./asm/regs.inc"
 
 output "./squidjump.nes", create
 origin 0
