@@ -1,1 +1,1 @@
-".\tools\Mesen\Mesen.exe" ".\squid.nes"
+".\tools\Mesen\Mesen.exe" ".\squidjump.nes"
