@@ -1,0 +1,1 @@
+".\tools\Mesen\Mesen.exe" ".\squid.nes"
