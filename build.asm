@@ -6,12 +6,19 @@ include "./asm/macros.asm"
 output "./squidjump.nes", create
 origin 0
 fill $10,$00	//iNES Header
-fill $10000,$FF	//PRG ROM
-fill $2000,$FF	//CHR ROM
+fill $8000,$00	//PRG ROM
+fill $2000,$00	//CHR ROM
 
-seekPRGAddr(0)
+seekPRGAddr($8000)
 include "./asm/main.asm"
 
+//Vectors
+seekPRGAddr($FFFA); dw nmi
+seekPRGAddr($FFFC); dw reset
+seekPRGAddr($FFFE); dw irq
+
+seekCHRAddr(0)
+insert "./chr/title.chr"
 
 //Edit Header
 origin 0
