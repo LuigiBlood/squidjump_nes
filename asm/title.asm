@@ -44,6 +44,7 @@ title_init:
 	rts
 
 title_update:
+	//Check for buttons
 	lda.b player1_push
 	and #%00000100
 	//DOWN
@@ -64,6 +65,7 @@ title_update:
 	bpl _title_update_oam
 	ldx #$02
 _title_update_oam:
+	//Update Squid Sprite on menu
 	stx.b title_select
 	cpx #$00
 	bne +

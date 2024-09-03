@@ -1,7 +1,5 @@
 game_squid_physics:
-	//test some acceleration
-	//- apply gravity
-	//- automatically apply force upwards
+	//Apply Gravity
 	lda squid_dy_lo
 	cmp #4
 	beq +
@@ -20,6 +18,7 @@ game_squid_physics:
 	rts
 
 squid_joypad:
+	//Detect A Button Press then Jump (Apply Acceleration)
 	lda player1_push
 	bpl +
 	lda #-6
@@ -28,6 +27,7 @@ squid_joypad:
 	rts
 
 apply_delta_physics_y:
+	//Apply Acceleration to Position
 	lda squid_dy_lo
 	sec
 	bmi +

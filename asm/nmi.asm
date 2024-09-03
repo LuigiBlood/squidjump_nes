@@ -5,13 +5,13 @@ nmi:
 	tya
 	pha
 
-	//Skip NMI if frame update isn't done yet
+	//Skip NMI if game frame update isn't done yet
 	ldx #$00
 	lda wait_nmi
 	bne +
 	jmp nmi_end
 
- +;	//OAM Update
+ +;	//Do OAM Update if pending
 	lda need_oam_update
 	beq +
 
@@ -20,7 +20,7 @@ nmi:
 	sta OAMDMA
 	stx need_oam_update
 
- +;	//PPU Register Update
+ +;	//Do PPU Register Update if pending
 	lda need_ppu_update
 	beq +
 

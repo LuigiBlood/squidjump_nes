@@ -1,5 +1,7 @@
 game_display_platform_start:
 	//assumes you can just upload to PPU
+
+	//Check Platform Type (if FF then end)
 	ldx #0
 -;	lda game_platform_table+0,x
 	cmp #$FF
@@ -7,6 +9,7 @@ game_display_platform_start:
 	rts
 
 +;
+	//temp = Platform Y Tile Position * 32
 	lda game_platform_table+4,x
 	bne +
 	lda game_platform_table+3,x
@@ -18,6 +21,7 @@ game_display_platform_start:
 	tya
 	lsr;lsr;lsr
 	sta argument1
+	//PPUADDR = $23C0 - temp
 	lda #$C0
 	clc
 	adc argument0
@@ -28,17 +32,17 @@ game_display_platform_start:
 	sta PPUADDR
 	sty PPUADDR
 
+	//Get Platform Length
 	lda game_platform_table+2,x
 	sta argument2
-
+	//Make Platform
 	ldy #$00
 	lda #6
  -;	sta PPUDATA
 	iny
 	cpy argument2
 	bne -
-
-
+	//Go To Next Platform
 +;	txa
 	clc
 	adc #5

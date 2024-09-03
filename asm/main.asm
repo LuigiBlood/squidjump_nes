@@ -38,18 +38,22 @@ reset:
 	bne -
 
 _start:
+	//Set Game Mode
 	lda #$01
 	jsr init_game_mode
 
 _update:
+	//Update Game Frame
 	jsr update_game_mode
-
+	//Wait for NMI to update again
 	inc wait_nmi
  -;	lda wait_nmi
 	bne -
 	jmp _update
 
 init_game_mode:
+	//Initialize Game Mode
+	//Argument: A = Game Mode
 	sta.b game_mode
 	cmp #$00
 	bne +
@@ -60,6 +64,7 @@ init_game_mode:
  +;	rts
 
 update_game_mode:
+	//Update Game Frame
 	lda.b game_mode
 	cmp #$00
 	bne +

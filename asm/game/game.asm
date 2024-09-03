@@ -76,7 +76,6 @@ game_init:
 	rts
 
 game_update:
-	//some semblance of gravity
 	jsr game_squid_physics
 	jsr game_set_oam
 	rts

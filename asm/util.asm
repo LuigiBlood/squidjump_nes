@@ -1,4 +1,5 @@
 empty_oambuffer:
+	//Zero OAM Buffer
 	lda #$00
 	tax
  -;	sta oambuf,x
@@ -7,6 +8,7 @@ empty_oambuffer:
 	rts
 
 fill_ppudata100:
+	//Fill PPUDATA with A (provided value)
 	ldx #$00
  -;	sta PPUDATA
 	inx
