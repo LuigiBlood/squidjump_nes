@@ -1,8 +1,12 @@
-nmi:
-	rts
+include "ram.inc"
 
-irq:
-	rts
+include "irq.asm"
+include "nmi.asm"
+include "util.asm"
+include "joypad.asm"
+include "game.asm"
+include "title.asm"
+
 
 reset:
 	sei			//Ignore IRQs
@@ -19,10 +23,9 @@ reset:
 	//Could do more shit here
 
 	bit PPUSTATUS
--;	bit PPUSTATUS
-	bpl -
+	waitVBlank()
 
-	//clr memory
+	//Clear RAM
 	txa
 -;	sta $0000,x
 	sta $0100,x
@@ -35,56 +38,35 @@ reset:
 	inx
 	bne -
 
-	//Could do more stuff
-
-	//test a copy of the title screen for now
-	ldx #$20
-	stx PPUADDR
-	sta PPUADDR
-
-	//copy nametable
-	ldx #$00
--;	lda title_nam+$000,x
-	sta PPUDATA
-	inx
-	bne -
--;	lda title_nam+$100,x
-	sta PPUDATA
-	inx
-	bne -
--;	lda title_nam+$200,x
-	sta PPUDATA
-	inx
-	bne -
--;	lda title_nam+$300,x
-	sta PPUDATA
-	inx
-	bne -
-	//copy palette
-	lda #$3F
-	sta PPUADDR
-	stx PPUADDR
--;	lda title_pal,x
-	sta PPUDATA
-	inx
-	cpx #$04
-	bne -
-
-	//wait for VBlank
--;	bit PPUSTATUS
-	bpl -
-
+_start:
 	lda #$00
-	sta PPUCTRL
-	bit PPUSTATUS
-	sta PPUSCROLL
-	sta PPUSCROLL
-	//show stuff
-	lda #%00001000
-	sta PPUMASK
--;	jmp -
+	jsr init_game_mode
 
-title_nam:
-	insert "../chr/title.nam"
-title_pal:
-	insert "../chr/title.pal"
+_update:
+	jsr update_game_mode
+
+	lda #$01
+	sta wait_nmi
+-;	bit wait_nmi
+	bne -
+	jmp _update
+
+init_game_mode:
+	sta.b game_mode
+	cmp #$00
+	bne +
+	jmp title_init
++;	cmp #$01
+	bne +
+	jmp game_init
++;	rts
+
+update_game_mode:
+	lda.b game_mode
+	cmp #$00
+	bne +
+	jmp title_update
++;	cmp #$01
+	bne +
+	jmp game_update
++;	rts

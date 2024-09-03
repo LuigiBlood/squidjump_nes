@@ -20,6 +20,7 @@ seekPRGAddr($FFFE); dw irq
 
 seekCHRAddr(0)
 insert "./chr/title.chr"
+insert "./chr/game.chr"
 
 //Edit Header
 origin 0
