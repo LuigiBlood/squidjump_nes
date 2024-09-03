@@ -1,4 +1,15 @@
 game_set_oam:
+	lda frame_count
+	and #$1F
+	cmp #0
+	bne ++
+	ldx squid_display
+	inx
+	cpx #5
+	bcc +
+	ldx #0
++;	stx squid_display
++;
 	jsr game_squid_oam
 	inc need_oam_update
 	rts
@@ -16,10 +27,13 @@ game_squid_oam:
 	sta oambuf+$04+0
 
 	//Sprite look
-	lda #$80
+	
+	lda squid_display
+	asl
+	ora #$80
 	sta oambuf+$00+1
 	sta oambuf+$04+1
-	lsr
+	lda #$40
 	sta oambuf+$00+2
 
 	rts

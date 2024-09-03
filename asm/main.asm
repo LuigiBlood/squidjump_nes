@@ -45,7 +45,7 @@ _update:
 	jsr update_game_mode
 
 	inc wait_nmi
- -;	bit wait_nmi
+ -;	lda wait_nmi
 	bne -
 	jmp _update
 

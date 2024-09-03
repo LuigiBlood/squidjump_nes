@@ -7,20 +7,28 @@ game_init:
 	stx PPUMASK	//Disable Rendering
 
 	//Init RAM
+	stx frame_count
+
 	stx squid_display
 	stx squid_x_frac
+	stx squid_x_int
+	stx squid_y_frac
 	stx squid_y_lo
 	stx squid_y_hi
-	stx squid_y_frac
 
 	stx squid_dx_frac
 	stx squid_dx_int
-	stx squid_dy_lo
 	stx squid_dy_frac
+	stx squid_dy_lo
 
 	lda #$80
 	sta squid_x_int
 	sta squid_y_lo
+
+	lda #$00
+	sta squid_dy_frac
+	lda #$F8
+	sta squid_dy_lo
 
 	//Upload to PPU
 	setPPUADDR($2000)

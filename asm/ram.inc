@@ -16,6 +16,8 @@ allocate(wait_nmi)
 allocate(need_oam_update)
 allocate(need_ppu_update)
 
+allocate(frame_count)
+
 allocate(game_mode)
 
 allocate(player1_prev)
@@ -29,15 +31,15 @@ allocate(squid_display)
 allocate(squid_x_frac)
 allocate(squid_x_int)
 
+allocate(squid_y_frac)
 allocate(squid_y_lo)
 allocate(squid_y_hi)
-allocate(squid_y_frac)
 
 allocate(squid_dx_frac)
 allocate(squid_dx_int)
 
-allocate(squid_dy_lo)
 allocate(squid_dy_frac)
+allocate(squid_dy_lo)
 
 //OAM Buffer
 setAllocAddr($0200)
