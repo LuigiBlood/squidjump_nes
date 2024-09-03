@@ -22,12 +22,13 @@ game_squid_oam:
 	adc #7
 	sta oambuf+$04+3
 
-	lda squid_y_lo
+	lda #$E0
+	clc
+	sbc squid_y_lo
 	sta oambuf+$00+0
 	sta oambuf+$04+0
 
 	//Sprite look
-	
 	lda squid_display
 	asl
 	ora #$80

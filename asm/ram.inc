@@ -18,15 +18,18 @@ allocate(need_ppu_update)
 
 allocate(frame_count)
 
-allocate(game_mode)
-
 allocate(player1_prev)
 allocate(player1_hold)
 allocate(player1_push)
 
+//Game Mode
+allocate(game_mode)
+//Title Screen Selection
 allocate(title_select)
 
-allocate(squid_display)
+//Squid
+allocate(squid_display)	//Sprite to display
+allocate(squid_hold)	//Hold
 
 allocate(squid_x_frac)
 allocate(squid_x_int)

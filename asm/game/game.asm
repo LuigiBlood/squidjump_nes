@@ -1,5 +1,7 @@
 include "squid.asm"
 include "oam.asm"
+include "display.asm"
+include "collision.asm"
 
 game_init:
 	ldx #$00
@@ -10,6 +12,7 @@ game_init:
 	stx frame_count
 
 	stx squid_display
+	stx squid_hold
 	stx squid_x_frac
 	stx squid_x_int
 	stx squid_y_frac
@@ -24,11 +27,6 @@ game_init:
 	lda #$80
 	sta squid_x_int
 	sta squid_y_lo
-
-	lda #$00
-	sta squid_dy_frac
-	lda #$F8
-	sta squid_dy_lo
 
 	//Upload to PPU
 	setPPUADDR($2000)

@@ -12,38 +12,35 @@ game_squid_physics:
 	lda squid_dy_lo
 	adc #0
 	sta squid_dy_lo
-	jmp ++
-+;	lda #$00
-	sta squid_dy_frac
-	lda #$F8
-	sta squid_dy_lo
-+;	jsr apply_delta_physics_y
+
++;
+	jsr game_squid_collision
+	jsr apply_delta_physics_y
 	rts
 
 apply_delta_physics_y:
 	lda squid_dy_lo
+	sec
 	bmi +
 	//Positive
 	lda squid_y_frac
-	clc
-	adc squid_dy_frac
+	sbc squid_dy_frac
 	sta squid_y_frac
 	lda squid_y_lo
-	adc squid_dy_lo
+	sbc squid_dy_lo
 	sta squid_y_lo
 	lda squid_y_hi
-	adc #0
+	sbc #0
 	sta squid_y_hi
 	rts
 +;	//Negative
 	lda squid_y_frac
-	clc
-	adc squid_dy_frac
+	sbc squid_dy_frac
 	sta squid_y_frac
 	lda squid_y_lo
-	adc squid_dy_lo
+	sbc squid_dy_lo
 	sta squid_y_lo
 	lda squid_y_hi
-	sbc #0
+	adc #0
 	sta squid_y_hi
 	rts
