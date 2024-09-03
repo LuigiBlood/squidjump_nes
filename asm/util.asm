@@ -5,3 +5,11 @@ empty_oambuffer:
 	inx
 	bne -
 	rts
+
+fill_ppudata100:
+	ldx #$00
+ -;	sta PPUDATA
+	inx
+	cpx #0
+	bne -
+	rts

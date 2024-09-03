@@ -3,16 +3,16 @@ title_init:
 	stx PPUCTRL	//Disable NMI
 	stx PPUMASK	//Disable Rendering
 
-	//init RAM
+	//Init RAM
 	stx.b title_select
 
-	//copy nametable
+	//Upload to PPU
 	setPPUADDR($2000); copyPPUDATA(title_nam, $400)
 	setPPUADDR($3F00); copyPPUDATA(title_pal, 4)
 	setPPUADDR($3F10); copyPPUDATA(title_pal, 4)
 
 	//PPU
-	lda #%10001000
+	lda #%10010000
 	sta.b buf_ppuctrl
 	lda #$00
 	sta.b buf_ppuscroll_x
@@ -25,7 +25,7 @@ title_init:
 	jsr empty_oambuffer
 	lda #$8F
 	sta oambuf+$00
-	lda #$0D
+	lda #$1A
 	sta oambuf+$01
 	lda #$60
 	sta oambuf+$03
@@ -36,7 +36,9 @@ title_init:
 
 	waitVBlank()
 
+	//Acknowledge VBlank
 	bit PPUSTATUS
+	//Enable NMI
 	lda #$80
 	sta PPUCTRL
 	rts

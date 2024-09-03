@@ -32,6 +32,15 @@ inline allocate(v) {
 	ramalloc = ramalloc + 1
 }
 
+macro copyPPUDATA_fill(FillVal, CPUSize) {
+	ldx #$00
+	lda #{FillVal}&$FF
+ -;	sta PPUDATA
+	inx
+	cpx #{CPUSize}&$FF
+	bne -
+}
+
 macro copyPPUDATA_code(CPUAddr, CPUSize) {
 	ldx #$00
  -;	lda {CPUAddr},x

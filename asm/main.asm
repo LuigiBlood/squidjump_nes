@@ -38,7 +38,7 @@ reset:
 	bne -
 
 _start:
-	lda #$00
+	lda #$01
 	jsr init_game_mode
 
 _update:
