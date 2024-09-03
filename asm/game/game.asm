@@ -42,7 +42,7 @@ game_init:
 	jsr fill_ppudata100
 	jsr fill_ppudata100
 
-	setPPUADDR($2340); copyPPUDATA_fill($06, $20)
+	jsr game_display_platform_start
 
 	setPPUADDR($3F00); copyPPUDATA(game_pal, $20)
 	sta PPUADDR
