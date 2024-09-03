@@ -1,7 +1,26 @@
+include "squid.asm"
+include "oam.asm"
+
 game_init:
 	ldx #$00
 	stx PPUCTRL	//Disable NMI
 	stx PPUMASK	//Disable Rendering
+
+	//Init RAM
+	stx squid_display
+	stx squid_x_frac
+	stx squid_y_lo
+	stx squid_y_hi
+	stx squid_y_frac
+
+	stx squid_dx_frac
+	stx squid_dx_int
+	stx squid_dy_lo
+	stx squid_dy_frac
+
+	lda #$80
+	sta squid_x_int
+	sta squid_y_lo
 
 	//Upload to PPU
 	setPPUADDR($2000)
@@ -37,9 +56,8 @@ game_init:
 	jsr empty_oambuffer
 
 	//Set NMI Management
-	lda #$01
-	sta.b need_oam_update
-	sta.b need_ppu_update
+	inc need_oam_update
+	inc need_ppu_update
 
 	waitVBlank()
 
@@ -50,7 +68,11 @@ game_init:
 	sta PPUCTRL
 
 	rts
+
 game_update:
+	//some semblance of gravity
+	jsr game_squid_physics
+	jsr game_set_oam
 	rts
 
 game_pal:

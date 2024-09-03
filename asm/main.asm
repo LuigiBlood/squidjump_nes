@@ -4,7 +4,7 @@ include "irq.asm"
 include "nmi.asm"
 include "util.asm"
 include "joypad.asm"
-include "game.asm"
+include "./game/game.asm"
 include "title.asm"
 
 reset:

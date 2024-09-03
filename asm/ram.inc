@@ -24,18 +24,24 @@ allocate(player1_push)
 
 allocate(title_select)
 
+allocate(squid_display)
+
+allocate(squid_x_frac)
+allocate(squid_x_int)
+
+allocate(squid_y_lo)
+allocate(squid_y_hi)
+allocate(squid_y_frac)
+
+allocate(squid_dx_frac)
+allocate(squid_dx_int)
+
+allocate(squid_dy_lo)
+allocate(squid_dy_frac)
+
 //OAM Buffer
 setAllocAddr($0200)
 allocate(oambuf)
 
 //Game
 setAllocAddr($0300)
-
-allocate(squid_display)
-
-allocate(squid_x_freq)
-allocate(squid_x_int)
-
-allocate(squid_y_lo)
-allocate(squid_y_hi)
-allocate(squid_y_freq)
