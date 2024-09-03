@@ -14,8 +14,17 @@ game_squid_physics:
 	sta squid_dy_lo
 
 +;
+	jsr squid_joypad
 	jsr game_squid_collision
 	jsr apply_delta_physics_y
+	rts
+
+squid_joypad:
+	lda player1_push
+	bpl +
+	lda #-6
+	sta squid_dy_lo
++;
 	rts
 
 apply_delta_physics_y:
