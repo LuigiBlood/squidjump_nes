@@ -1,7 +1,11 @@
 //Zero Page
-setAllocAddr($0000)
+setAllocAddr($00)
+allocate(argument0)
 allocate(argument1)
 allocate(argument2)
+allocate(argument3)
+allocate(argument4)
+allocate(argument5)
 
 allocate(buf_ppuctrl)
 allocate(buf_ppumask)

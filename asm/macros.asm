@@ -31,3 +31,24 @@ inline allocate(v) {
 	constant {v} = ramalloc
 	ramalloc = ramalloc + 1
 }
+
+macro copyPPUDATA_code(CPUAddr, CPUSize) {
+	ldx #$00
+ -;	lda {CPUAddr},x
+	sta PPUDATA
+	inx
+	cpx #{CPUSize}&$FF
+	bne -
+}
+
+macro copyPPUDATA(CPUAddr, CPUSize) {
+	variable i = $0000
+	while (i < {CPUSize}) {
+		if (({CPUSize}-i) <= $100) {
+			copyPPUDATA_code({CPUAddr} + i, {CPUSize} - i)
+		} else {
+			copyPPUDATA_code({CPUAddr} + i, $100)
+		}
+		i = i + $100
+	}
+}

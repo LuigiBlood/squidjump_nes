@@ -7,7 +7,6 @@ include "joypad.asm"
 include "game.asm"
 include "title.asm"
 
-
 reset:
 	sei			//Ignore IRQs
 	cld			//Disable Decimal Mode
@@ -27,7 +26,7 @@ reset:
 
 	//Clear RAM
 	txa
--;	sta $0000,x
+ -;	sta $0000,x
 	sta $0100,x
 	sta $0200,x
 	sta $0300,x
@@ -45,9 +44,8 @@ _start:
 _update:
 	jsr update_game_mode
 
-	lda #$01
-	sta wait_nmi
--;	bit wait_nmi
+	inc wait_nmi
+ -;	bit wait_nmi
 	bne -
 	jmp _update
 
@@ -56,17 +54,17 @@ init_game_mode:
 	cmp #$00
 	bne +
 	jmp title_init
-+;	cmp #$01
+ +;	cmp #$01
 	bne +
 	jmp game_init
-+;	rts
+ +;	rts
 
 update_game_mode:
 	lda.b game_mode
 	cmp #$00
 	bne +
 	jmp title_update
-+;	cmp #$01
+ +;	cmp #$01
 	bne +
 	jmp game_update
-+;	rts
+ +;	rts

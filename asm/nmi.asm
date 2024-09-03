@@ -5,11 +5,13 @@ nmi:
 	tya
 	pha
 
+	//Skip NMI if frame update isn't done yet
 	ldx #$00
 	lda wait_nmi
 	bne +
 	jmp nmi_end
-+;
+
+ +;	//OAM Update
 	lda need_oam_update
 	beq +
 
@@ -18,7 +20,7 @@ nmi:
 	sta OAMDMA
 	stx need_oam_update
 
-+;
+ +;	//PPU Register Update
 	lda need_ppu_update
 	beq +
 
@@ -35,12 +37,13 @@ nmi:
 
 	stx need_ppu_update
 
-+;
+ +;	//Read Joypad
+	jsr read_joy
+	//Let next frame be managed
 	lda #$00
 	sta wait_nmi
 
 nmi_end:
-	jsr read_joy
 	pla
 	tay
 	pla

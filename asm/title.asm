@@ -6,46 +6,12 @@ title_init:
 	//init RAM
 	stx.b title_select
 
-	waitVBlank()
-
 	//copy nametable
-	setPPUADDR($2000)
-	ldx #$00
- -;	lda title_nam+$000,x
-	sta PPUDATA
-	inx
-	bne -
- -;	lda title_nam+$100,x
-	sta PPUDATA
-	inx
-	bne -
- -;	lda title_nam+$200,x
-	sta PPUDATA
-	inx
-	bne -
- -;	lda title_nam+$300,x
-	sta PPUDATA
-	inx
-	bne -
+	setPPUADDR($2000); copyPPUDATA(title_nam, $400)
+	setPPUADDR($3F00); copyPPUDATA(title_pal, 4)
+	setPPUADDR($3F10); copyPPUDATA(title_pal, 4)
 
-	//copy palette
-	setPPUADDR($3F00)
-	ldx #$00
- -;	lda title_pal,x
-	sta PPUDATA
-	inx
-	cpx #$04
-	bne -
-
-	setPPUADDR($3F10)
-	ldx #$00
- -;	lda title_pal,x
-	sta PPUDATA
-	inx
-	cpx #$04
-	bne -
-
-//PPU
+	//PPU
 	lda #%10001000
 	sta.b buf_ppuctrl
 	lda #$00
@@ -55,7 +21,7 @@ title_init:
 	lda #%00011000
 	sta.b buf_ppumask
 
-//OAM
+	//OAM
 	jsr empty_oambuffer
 	lda #$8F
 	sta oambuf+$00
@@ -86,12 +52,12 @@ title_update:
 	bcc _title_update_oam
 	ldx #$00
 	jmp _title_update_oam
-+;	lda.b player1_push
+ +;	lda.b player1_push
 	and #%00001000
 	//UP
 	bne +
 	rts
-+;	ldx.b title_select
+ +;	ldx.b title_select
 	dex
 	bpl _title_update_oam
 	ldx #$02
@@ -101,11 +67,11 @@ _title_update_oam:
 	bne +
 	lda #$8F
 	jmp _title_update_oam_end
-+;	cpx #$01
+ +;	cpx #$01
 	bne +
 	lda #$9F
 	jmp _title_update_oam_end
-+;	lda #$AF
+ +;	lda #$AF
 _title_update_oam_end:
 	sta oambuf+$00
 	sta.b need_oam_update
