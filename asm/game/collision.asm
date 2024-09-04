@@ -54,12 +54,42 @@ _checkplatforms:
 	cmp argument1
 	bcs +
 	jmp _skiptonextplatform
++;
+	//Prepare Platform Pixel Positions
+	lda game_platform_table+1,x	//Left X
+	pha
+	asl; asl; asl
+	sta argument2
+	pla
+	clc
+	adc game_platform_table+2,x	//Right X
+	asl; asl; asl
+	bcc +
+	lda #$ff	//If it's more than 255, cap it
++;	sta argument3
+	//Compare X (Leftmost Hitbox) <= Platform X Rightmost Pixel Position
+	lda squid_x_int
+	cmp argument3
+	bcc +
+	beq +
+	jmp _skiptonextplatform
++;
+	//Compare X (Rightmost Hitbox) > Platform X Leftmost Pixel Position
+	lda squid_x_int
+	clc
+	adc #15
+	cmp argument2
+	bcs +
+	jmp _skiptonextplatform
++;
 	//If both are true, then stop any downwards acceleration
-+;	lda argument0
+	lda argument0
 	sta squid_y_lo
 	lda argument1
 	sta squid_y_hi
 	lda #0
 	sta squid_dy_lo
 	sta squid_dy_frac
+	sta squid_dx_int
+	sta squid_dx_frac
 	rts
