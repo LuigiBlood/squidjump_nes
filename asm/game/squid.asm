@@ -1,7 +1,8 @@
 game_squid_physics:
 	//Apply Gravity
 	lda squid_dy_lo
-	cmp #4
+	ora squid_dy_frac
+	cmp #$81
 	beq +
 	lda squid_dy_frac
 	clc
