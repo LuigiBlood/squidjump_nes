@@ -7,7 +7,7 @@ game_stage_copy:
 	rts
 
 game_stage_data:
-	//Type, X-Pos, Length, Y-Pos (16-bit)
+	//Type, X-Pos (Tile), Length (Tiles), Y-Pos (16-bit Tile Position)
 	//Types: FF = End, 00 = Regular Platform, 01 = Ice Platform, 02 = Moving Platform (Sprite), 80 = Goal Fish
 	db $00, $00, $20; dw $0004
 	db $01, $13, $0A; dw $000C

@@ -10,27 +10,27 @@ _game_platform_display_start_loop:
 	rts
 
 +;
-	//temp = Platform Y Tile Position * 32
+	//Avoid all platforms above Y Tile position 32
 	lda stgbuf+4,x
 	bne +
 	lda stgbuf+3,x
 	cmp #$20
 	bcs +
+	//temp = Platform Y Tile Position * 32 - Platform X Position
 	tay
 	asl;asl;asl;asl;asl
-	clc
-	adc stgbuf+1,x
+	clc; adc stgbuf+1,x
+	eor #$1F
+	clc; adc #1
 	sta argument0
 	tya
 	lsr;lsr;lsr
 	sta argument1
-	//PPUADDR = $23C0 - temp
-	lda #$C0
-	clc
-	adc argument0
+	//PPUADDR = $23E0 - temp
+	lda #$E0
+	sec; sbc argument0
 	tay
 	lda #$23
-	sec
 	sbc argument1
 	sta PPUADDR
 	sty PPUADDR
@@ -48,6 +48,7 @@ _game_platform_display_start_loop:
 	iny
 	cpy argument2
 	bne -
+
 	//Change Attributes
 	lda stgbuf+3,x
 	and #$FC
