@@ -1,9 +1,5 @@
 game_squid_physics:
 	//Apply Gravity
-	lda squid_dy_lo
-	ora squid_dy_frac
-	cmp #$81
-	beq +
 	lda squid_dy_frac
 	clc
 	adc #$40
@@ -12,6 +8,18 @@ game_squid_physics:
 	adc #0
 	sta squid_dy_lo
 
+	//Fall Speed Cap
+	lda squid_dy_lo
+	cmp #$01
+	bmi +
+	bcc +
+	lda squid_dy_frac
+	//cmp #$80
+	bpl +
+	lda #$01
+	sta squid_dy_lo
+	lda #$80
+	sta squid_dy_frac
 +;
 	jsr squid_joypad
 	jsr squid_anim
