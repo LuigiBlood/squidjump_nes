@@ -59,10 +59,8 @@ _checkplatforms:
 +;
 	//Prepare Platform Pixel Positions
 	lda stgbuf+1,x	//Left X
-	pha
-	asl; asl; asl
-	sta argument2
-	pla
+	lsr; lsr; lsr
+	//sta argument2
 	clc
 	adc stgbuf+2,x	//Right X
 	asl; asl; asl
@@ -80,7 +78,7 @@ _checkplatforms:
 	lda squid_x_int
 	clc
 	adc #15
-	cmp argument2
+	cmp stgbuf+1,x
 	bcs +
 	jmp _skiptonextplatform
 +;

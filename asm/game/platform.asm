@@ -10,6 +10,10 @@ _game_platform_display_start_loop:
 	rts
 
 +;
+	cmp #$02
+	bne +
+	rts
++;
 	//Avoid all platforms above Y Tile position 32
 	lda stgbuf+4,x
 	bne +
@@ -18,8 +22,12 @@ _game_platform_display_start_loop:
 	bcs +
 	//temp = Platform Y Tile Position * 32 - Platform X Position
 	tay
+	lda stgbuf+1,x
+	lsr;lsr;lsr
+	sta argument0
+	tya
 	asl;asl;asl;asl;asl
-	clc; adc stgbuf+1,x
+	clc; adc argument0
 	eor #$1F
 	clc; adc #1
 	sta argument0
