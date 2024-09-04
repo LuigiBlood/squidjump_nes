@@ -79,7 +79,7 @@ game_init:
 	rts
 
 game_update:
-	jsr game_squid_physics
+	jsr game_squid_update
 	jsr game_set_oam
 	rts
 

@@ -1,4 +1,4 @@
-game_squid_physics:
+game_squid_update:
 	//Apply Gravity
 	lda squid_dy_frac
 	clc
@@ -20,7 +20,46 @@ game_squid_physics:
 	sta squid_dy_lo
 	lda #$80
 	sta squid_dy_frac
-+;
+
++;	//Horizontal Movement (Friction, Moving Platform)
+	lda squid_stand
+	beq _game_squid_update_end
+_game_squid_update_stand0:
+	//Platform Type 0 (Just remove all horizontal movement)
+	cmp #0+1
+	bne _game_squid_update_stand1
+	lda #0
+	sta squid_dx_frac
+	sta squid_dx_int
+	jmp _game_squid_update_end
+_game_squid_update_stand1:
+	//Platform Type 1 (Ice, add a bit of slowdown)
+	cmp #1+1
+	bne _game_squid_update_stand2
+	lda squid_dx_int
+	ora squid_dx_frac
+	beq _game_squid_update_stand2
+	lda squid_dx_int
+	bmi +
+	//Positive
+	lda squid_dx_frac
+	sec
+	sbc #$04
+	sta squid_dx_frac
+	lda squid_dx_int
+	sbc #0
+	sta squid_dx_int
+	jmp _game_squid_update_stand2
+	//Negative
++;	lda squid_dx_frac
+	clc
+	adc #$04
+	sta squid_dx_frac
+	lda squid_dx_int
+	adc #0
+	sta squid_dx_int
+_game_squid_update_stand2:
+_game_squid_update_end:
 	jsr squid_joypad
 	jsr squid_anim
 	jsr game_squid_collision
@@ -64,6 +103,9 @@ squid_joypad:
 	lda player1_hold
 	and #$02
 	beq +
+	//Don't Move when standing
+	lda squid_stand
+	bne +
 	//Cap Speed
 	lda squid_dx_int
 	cmp #-3
@@ -81,6 +123,9 @@ squid_joypad:
 	lda player1_hold
 	and #$01
 	beq +
+	//Don't Move when standing
+	lda squid_stand
+	bne +
 	//Cap Speed
 	lda squid_dx_int
 	cmp #2

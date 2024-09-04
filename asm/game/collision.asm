@@ -92,8 +92,8 @@ _checkplatforms:
 	lda #0
 	sta squid_dy_lo
 	sta squid_dy_frac
-	sta squid_dx_int
-	sta squid_dx_frac
-	lda #1
+	lda stgbuf+0,x
+	clc
+	adc #1
 	sta squid_stand
 	rts
