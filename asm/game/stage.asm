@@ -10,7 +10,7 @@ game_stage_data:
 	//Type, X-Pos, Length, Y-Pos (16-bit)
 	//Types: FF = End, 00 = Regular Platform, 01 = Ice Platform, 02 = Moving Platform (Sprite), 80 = Goal Fish
 	db $00, $00, $20; dw $0004
-	db $01, $16, $07; dw $000C
+	db $01, $13, $0A; dw $000C
 	db $00, $03, $09; dw $0014
 	db $FF	//End
 game_stage_data_end:
