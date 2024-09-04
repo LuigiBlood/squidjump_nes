@@ -3,7 +3,8 @@ game_platform_display_start:
 
 	//Check Platform Type (if FF then end)
 	ldx #0
--;	lda stgbuf+0,x
+_game_platform_display_start_loop:
+	lda stgbuf+0,x
 	cmp #$FF
 	bne +
 	rts
@@ -13,6 +14,8 @@ game_platform_display_start:
 	lda stgbuf+4,x
 	bne +
 	lda stgbuf+3,x
+	cmp #$20
+	bcs +
 	tay
 	asl;asl;asl;asl;asl
 	clc
@@ -38,13 +41,36 @@ game_platform_display_start:
 	//Make Platform
 	ldy #$00
 	lda #6
+	clc
+	adc stgbuf+0,x
+	adc stgbuf+0,x
  -;	sta PPUDATA
 	iny
 	cpy argument2
 	bne -
+	//Change Attributes
+	lda stgbuf+3,x
+	and #$FC
+	asl
+	eor #$F8
+	ldy #$23
+	sty PPUADDR
+	sta PPUADDR
+	lda stgbuf+0,x
+	tay
+	lda table_attr,y
+	ldy #0
+-;	sta PPUDATA
+	iny
+	cpy #8
+	bne -
+
 	//Go To Next Platform
 +;	txa
 	clc
 	adc #5
 	tax
-	jmp --
+	jmp _game_platform_display_start_loop
+
+table_attr:
+	db $00,$55,$AA,$FF
