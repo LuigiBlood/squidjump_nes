@@ -1,16 +1,4 @@
 game_set_oam:
-	//Automatically cycle through Squid Displays
-	lda frame_count
-	and #$1F
-	cmp #0
-	bne ++
-	ldx squid_display
-	inx
-	cpx #5
-	bcc +
-	ldx #0
-+;	stx squid_display
-+;
 	//Set OAM Data for Squid
 	jsr game_squid_oam
 	inc need_oam_update
