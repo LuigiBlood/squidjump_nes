@@ -52,5 +52,5 @@ game_display_platform_start:
 game_platform_table:
 	//Type, X-Pos, Length, Y-Pos (16-bit)
 	db $00, $00, $20; dw $0004
-	db $00, $0D, $05; dw $0014
+	db $00, $03, $05; dw $0014
 	db $FF	//End
