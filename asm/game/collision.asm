@@ -1,5 +1,7 @@
 game_squid_collision:
 	//Only do collision checks when going down
+	lda #0
+	sta squid_stand
 	lda squid_dy_lo
 	bpl +
 	rts
@@ -92,4 +94,6 @@ _checkplatforms:
 	sta squid_dy_frac
 	sta squid_dx_int
 	sta squid_dx_frac
+	lda #1
+	sta squid_stand
 	rts

@@ -37,7 +37,15 @@ nmi:
 
 	stx need_ppu_update
 
- +;	//Read Joypad
+ +;	
+	//Test Color for Squid
+	setPPUADDR($3F13)
+	lda squid_color
+	sta PPUDATA
+	lda #0
+	sta PPUADDR
+	sta PPUADDR
+	//Read Joypad
 	jsr read_joy
 	inc frame_count
 	//Let next frame be managed

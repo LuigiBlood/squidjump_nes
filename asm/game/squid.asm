@@ -13,16 +13,41 @@ game_squid_physics:
 
 +;
 	jsr squid_joypad
+	jsr squid_anim
 	jsr game_squid_collision
 	jsr apply_delta_physics_x
 	jsr apply_delta_physics_y
 	rts
 
 squid_joypad:
-	//Detect A Button Press then Jump (Apply Acceleration)
-	//A Button (Push)
-	lda player1_push
+	//A Button (Hold) - Charge Jump
+	lda player1_hold
 	bpl +
+	ldx squid_hold
+	cpx #$40
+	beq ++
+	inx
+	stx squid_hold
+	jmp ++
++;	lda squid_hold
+	beq +
+	clc
+	adc #$10
+	tax
+	asl;asl;asl;asl;asl;
+	eor #$ff
+	sta squid_dy_frac
+	txa
+	lsr;lsr;lsr;
+	eor #$ff
+	sta squid_dy_lo
+	lda #0
+	sta squid_hold
++;
+	//B Button (Press) - Debug Jump
+	lda player1_push
+	and #$40
+	beq +
 	lda #-6
 	sta squid_dy_lo
 +;
@@ -32,7 +57,7 @@ squid_joypad:
 	beq +
 	//Cap Speed
 	lda squid_dx_int
-	cmp #-4
+	cmp #-3
 	beq +
 	sec
 	lda squid_dx_frac
@@ -49,7 +74,7 @@ squid_joypad:
 	beq +
 	//Cap Speed
 	lda squid_dx_int
-	cmp #3
+	cmp #2
 	beq +
 	clc
 	lda squid_dx_frac
@@ -61,6 +86,40 @@ squid_joypad:
 	rts
 +;
 	rts
+
+squid_anim:
+	lda squid_hold
+	cmp #$20
+	bcc +
+	lda #$20
++;
+	lsr;lsr;lsr;
+	sta squid_display
+
+	ldx #0
+	ldy squid_hold
+	cpy #$2A
+	bcc +
+	inx
++;	cpy #$30
+	bcc +
+	inx
++;	cpy #$38
+	bcc +
+	inx
++;	cpy #$40
+	bcc squid_anim_end
+	lda frame_count
+	and #$04
+	beq squid_anim_end
+	inx
+squid_anim_end:
+	lda squid_anim_color,x
+	sta squid_color
+	rts
+
+squid_anim_color:
+	db $30, $35, $26, $16, $27
 
 apply_delta_physics_x:
 	//Apply Acceleration to Position
