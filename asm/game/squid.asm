@@ -88,15 +88,27 @@ squid_joypad:
 	rts
 
 squid_anim:
-	lda squid_hold
-	cmp #$20
-	bcc +
-	lda #$20
-+;
-	lsr;lsr;lsr;
+	lda #0
+	tax
+	tay
 	sta squid_display
+	lda squid_hold
+	beq squid_anim_end
+	cmp #$01
+	bcc +
+	iny
++;	cmp #$0A
+	bcc +
+	iny
++;	cmp #$14
+	bcc +
+	iny
++;	cmp #$1E
+	bcc +
+	iny
++;
+	sty squid_display
 
-	ldx #0
 	ldy squid_hold
 	cpy #$2A
 	bcc +
