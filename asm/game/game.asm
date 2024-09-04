@@ -80,6 +80,7 @@ game_init:
 
 game_update:
 	jsr game_squid_update
+	jsr game_platform_update
 	jsr game_set_oam
 	rts
 

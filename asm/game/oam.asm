@@ -39,7 +39,10 @@ game_platform_oam:
 	cmp #$FF
 	bne +
 	rts
-+;	cmp #$02
++;
+	cmp #$02
+	beq +
+	cmp #$03
 	beq +
 -;	//Next Platform
 	inx;inx;inx;inx;inx

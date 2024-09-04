@@ -30,7 +30,8 @@ allocate(title_select)
 //Squid
 allocate(squid_display)	//Sprite to display
 allocate(squid_hold)	//Hold
-allocate(squid_stand)	//Standing on Floor
+allocate(squid_stand)		//Standing on Platform (Type)
+allocate(squid_stand_ptr)	//Standing on Platform (Ptr)
 allocate(squid_color)	//Color (Temp)
 
 allocate(squid_x_frac)

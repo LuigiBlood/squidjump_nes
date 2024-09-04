@@ -11,15 +11,25 @@ _game_platform_display_start_loop:
 
 +;
 	cmp #$02
-	bne +
+	beq _game_platform_display_start_next
+	cmp #$03
+	beq _game_platform_display_start_next
+	jmp ++
+_game_platform_display_start_next:
+	//Go To Next Platform
++;	txa
+	clc
+	adc #5
+	tax
+	jmp _game_platform_display_start_loop
 	rts
 +;
 	//Avoid all platforms above Y Tile position 32
 	lda stgbuf+4,x
-	bne +
+	bne _game_platform_display_start_next
 	lda stgbuf+3,x
 	cmp #$20
-	bcs +
+	bcs _game_platform_display_start_next
 	//temp = Platform Y Tile Position * 32 - Platform X Position
 	tay
 	lda stgbuf+1,x
@@ -73,13 +83,56 @@ _game_platform_display_start_loop:
 	iny
 	cpy #8
 	bne -
-
-	//Go To Next Platform
-+;	txa
-	clc
-	adc #5
-	tax
-	jmp _game_platform_display_start_loop
+	jmp _game_platform_display_start_next
 
 table_attr:
 	db $00,$55,$AA,$FF
+
+game_platform_update:
+	//Constantly make Moving Platforms move to the right (for tests)
+	//Including the squid if it stands on it
+	ldx #0
+-;	lda stgbuf+0,x
+	cmp #$FF
+	bne +
+	rts
++;	cmp #$02
+	beq _platform2_update
+	cmp #$03
+	beq _platform3_update
+-;	inx;inx;inx;inx;inx
+	jmp --
+_platform2_update:
+	inc stgbuf+1,x
+	ldy squid_stand
+	dey
+	tya
+	cmp stgbuf+0,x
+	bne +
+	cpx squid_stand_ptr
+	bne +
+	inc squid_x_int
++;	lda stgbuf+2,x
+	asl;asl;asl
+	clc; adc stgbuf+1,x
+	cmp #$F0
+	bne +
+	inc stgbuf+0,x
++;	jmp -
+	rts
+_platform3_update:
+	dec stgbuf+1,x
+	ldy squid_stand
+	dey
+	tya
+	cmp stgbuf+0,x
+	bne +
+	cpx squid_stand_ptr
+	bne +
+	dec squid_x_int
++;	lda stgbuf+1,x
+	cmp #$10
+	bne +
+	dec stgbuf+0,x
++;	jmp -
+	rts

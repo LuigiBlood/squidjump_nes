@@ -94,4 +94,5 @@ _checkplatforms:
 	clc
 	adc #1
 	sta squid_stand
+	stx squid_stand_ptr
 	rts
