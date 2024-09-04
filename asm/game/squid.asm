@@ -28,6 +28,7 @@ _game_squid_update_stand0:
 	//Platform Type 0 (Just remove all horizontal movement)
 	cmp #0+1
 	bne _game_squid_update_stand1
+-;
 	lda #0
 	sta squid_dx_frac
 	sta squid_dx_int
@@ -38,7 +39,7 @@ _game_squid_update_stand1:
 	bne _game_squid_update_stand2
 	lda squid_dx_int
 	ora squid_dx_frac
-	beq _game_squid_update_stand2
+	beq _game_squid_update_end
 	lda squid_dx_int
 	bmi +
 	//Positive
@@ -49,7 +50,7 @@ _game_squid_update_stand1:
 	lda squid_dx_int
 	sbc #0
 	sta squid_dx_int
-	jmp _game_squid_update_stand2
+	jmp _game_squid_update_end
 	//Negative
 +;	lda squid_dx_frac
 	clc
@@ -58,7 +59,9 @@ _game_squid_update_stand1:
 	lda squid_dx_int
 	adc #0
 	sta squid_dx_int
+	jmp _game_squid_update_end
 _game_squid_update_stand2:
+	jmp -
 _game_squid_update_end:
 	jsr squid_joypad
 	jsr squid_anim
