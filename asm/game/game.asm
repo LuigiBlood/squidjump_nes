@@ -1,6 +1,6 @@
 include "squid.asm"
 include "oam.asm"
-include "display.asm"
+include "platform.asm"
 include "collision.asm"
 include "stage.asm"
 
@@ -45,7 +45,7 @@ game_init:
 	jsr fill_ppudata100
 	jsr fill_ppudata100
 
-	jsr game_display_platform_start
+	jsr game_platform_display_start
 
 	setPPUADDR($3F00); copyPPUDATA(game_pal, $20)
 	sta PPUADDR

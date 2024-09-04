@@ -1,4 +1,4 @@
-game_display_platform_start:
+game_platform_display_start:
 	//assumes you can just upload to PPU
 
 	//Check Platform Type (if FF then end)
