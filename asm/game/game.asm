@@ -2,6 +2,7 @@ include "squid.asm"
 include "oam.asm"
 include "display.asm"
 include "collision.asm"
+include "stage.asm"
 
 game_init:
 	ldx #$00
@@ -27,6 +28,8 @@ game_init:
 	lda #$80
 	sta squid_x_int
 	sta squid_y_lo
+
+	jsr game_stage_copy
 
 	//Upload to PPU
 	setPPUADDR($2000)

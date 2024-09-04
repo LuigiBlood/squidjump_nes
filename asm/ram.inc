@@ -52,3 +52,5 @@ allocate(oambuf)
 
 //Game
 setAllocAddr($0300)
+//Stage Data
+allocate(stgbuf)	//allows up to exactly 51 platforms if we use 256 bytes, which is actually more than enough, at worst we would allow even more
