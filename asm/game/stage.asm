@@ -25,8 +25,8 @@ game_stage_data:
 	make_stage_platform($00, $03, $09, $0010)
 	make_stage_platform($01, $08, $08, $0016)
 	make_stage_platform($00, $03, $09, $0020)
-	make_stage_platform($00, $13, $09, $0030)
-	make_stage_platform($00, $03, $09, $0041)
+	make_stage_platform($01, $15, $09, $0030)
+	make_stage_platform($01, $05, $09, $0041)
 	make_stage_platform($00, $13, $09, $0051)
 	db $FF	//End
 game_stage_data_end:

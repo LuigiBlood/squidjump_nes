@@ -316,8 +316,15 @@ game_scrolling_mgr:
 	sta temp1
 	lda #$F0
 	sec; sbc temp1
-	sta buf_ppuscroll_y
-
+	cmp #$F0
+	bne +
+	//weird hacky workaround but it works
+	lda temp0
+	eor #1
+	sta temp0
+	lda #0
++;	sta buf_ppuscroll_y
+	
 	lda temp0
 	and #1
 	bne +
