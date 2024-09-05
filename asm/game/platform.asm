@@ -34,28 +34,28 @@ _game_platform_display_start_next:
 	tay
 	lda stgbuf+1,x
 	lsr;lsr;lsr
-	sta argument0
+	sta temp0
 	tya
 	asl;asl;asl;asl;asl
-	clc; adc argument0
+	clc; adc temp0
 	eor #$1F
 	clc; adc #1
-	sta argument0
+	sta temp0
 	tya
 	lsr;lsr;lsr
-	sta argument1
+	sta temp1
 	//PPUADDR = $23E0 - temp
 	lda #$E0
-	sec; sbc argument0
+	sec; sbc temp0
 	tay
 	lda #$23
-	sbc argument1
+	sbc temp1
 	sta PPUADDR
 	sty PPUADDR
 
 	//Get Platform Length
 	lda stgbuf+2,x
-	sta argument2
+	sta temp2
 	//Make Platform
 	ldy #$00
 	lda #6
@@ -64,7 +64,7 @@ _game_platform_display_start_next:
 	adc stgbuf+0,x
  -;	sta PPUDATA
 	iny
-	cpy argument2
+	cpy temp2
 	bne -
 
 	//Change Attributes

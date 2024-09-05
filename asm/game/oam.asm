@@ -7,37 +7,42 @@ game_set_oam:
 
 game_squid_oam:
 	//Sprite Look
+	ldx oambuf_ptr
 	lda squid_display
 	asl
 	ora #$80
-	sta oambuf+$00+1
-	sta oambuf+$04+1
+	sta oambuf+$00+1,x
+	sta oambuf+$04+1,x
 	lda #$40
-	sta oambuf+$00+2
+	sta oambuf+$00+2,x
 
 	//X Position
 	lda squid_x_int
-	sta oambuf+$00+3
+	sta oambuf+$00+3,x
 	clc
 	adc #7
-	sta oambuf+$04+3
+	sta oambuf+$04+3,x
 
 	//Y Position (offset by 0xE0, for camera scrolling purposes)
 	lda #$E0
 	clc
 	sbc squid_y_lo
-	sta oambuf+$00+0
-	sta oambuf+$04+0
+	sta oambuf+$00+0,x
+	sta oambuf+$04+0,x
 
+	txa
+	clc; adc #8
+	sta oambuf_ptr
 	rts
 
 game_platform_oam:
 	ldx #0	//X = Stage Buffer
-	ldy #8	//Y = OAM Buffer
+	ldy oambuf_ptr	//Y = OAM Buffer
 
 -;	lda stgbuf+0,x
 	cmp #$FF
 	bne +
+	sty oambuf_ptr
 	rts
 +;
 	cmp #$02
@@ -50,20 +55,20 @@ game_platform_oam:
 +;
 	//Render Moving Platform
 	lda stgbuf+2,x	//Length in Tiles
-	sta argument0
+	sta temp0
 	lda stgbuf+3,x	//Y Position (offset by 0xF0)
 	asl; asl; asl
-	sta argument1
+	sta temp1
 	lda #$F0
-	clc; sbc argument1
-	sta argument1
+	clc; sbc temp1
+	sta temp1
 	lda stgbuf+1,x	//X Pos
-	sta argument2
--;	lda argument2
+	sta temp2
+-;	lda temp2
 	//X Position
 	sta oambuf+3,y
 	//Y Position (Temp)
-	lda argument1
+	lda temp1
 	sta oambuf+0,y
 	//Sprite
 	lda #10
@@ -73,10 +78,10 @@ game_platform_oam:
 	sta oambuf+2,y
 	//Next
 	iny;iny;iny;iny
-	lda argument2
+	lda temp2
 	clc; adc #8
-	sta argument2
-	dec argument0
+	sta temp2
+	dec temp0
 	bne -
 	jmp --
 	rts

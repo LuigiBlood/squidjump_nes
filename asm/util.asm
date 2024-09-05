@@ -1,6 +1,7 @@
 empty_oambuffer:
 	//Zero OAM Buffer
 	lda #$00
+	sta oambuf_ptr
 	tax
  -;	sta oambuf,x
 	inx

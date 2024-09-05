@@ -24,22 +24,22 @@ _checkplatforms:
 	//Get Platform Y Tile Position and convert to pixel based
 	lda stgbuf+3,x
 	asl; asl; asl
-	sta argument0
+	sta temp0
 	lda stgbuf+3,x
 	lsr; lsr; lsr; lsr; lsr
-	sta argument1
+	sta temp1
 	lda stgbuf+4,x
 	asl; asl; asl
-	ora argument1
-	sta argument1
+	ora temp1
+	sta temp1
 	//Compare Y <= Platform Y Pixel Position
 	lda squid_y_lo
-	cmp argument0
+	cmp temp0
 	bcc +
 	beq +
 	jmp _skiptonextplatform
 +;	lda squid_y_hi
-	cmp argument1
+	cmp temp1
 	bcc +
 	beq +
 	jmp _skiptonextplatform
@@ -48,28 +48,28 @@ _checkplatforms:
 	lda squid_y_lo
 	clc
 	adc squid_dy_lo
-	cmp argument0
+	cmp temp0
 	bcs +
 	jmp _skiptonextplatform
 +;	lda squid_y_hi
 	adc #0
-	cmp argument1
+	cmp temp1
 	bcs +
 	jmp _skiptonextplatform
 +;
 	//Prepare Platform Pixel Positions
 	lda stgbuf+1,x	//Left X
 	lsr; lsr; lsr
-	//sta argument2
+	//sta temp2
 	clc
 	adc stgbuf+2,x	//Right X
 	asl; asl; asl
 	bcc +
 	lda #$ff	//If it's more than 255, cap it
-+;	sta argument3
++;	sta temp3
 	//Compare X (Leftmost Hitbox) <= Platform X Rightmost Pixel Position
 	lda squid_x_int
-	cmp argument3
+	cmp temp3
 	bcc +
 	beq +
 	jmp _skiptonextplatform
@@ -83,9 +83,9 @@ _checkplatforms:
 	jmp _skiptonextplatform
 +;
 	//If both are true, then stop any downwards acceleration
-	lda argument0
+	lda temp0
 	sta squid_y_lo
-	lda argument1
+	lda temp1
 	sta squid_y_hi
 	lda #0
 	sta squid_dy_lo
