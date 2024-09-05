@@ -64,7 +64,7 @@ _div_high_zero:
 _div_low:
 	//Divide Low byte by 30
 	//((LL>>4 + (LL+1)) >>> 1) >> 4
-	//Thx Omegamatrix from NESDev forums
+	//From Omegamatrix @ https://forums.nesdev.org/viewtopic.php?p=129849#p129849
 	tay
 	sta	div_temp
 	lsr;lsr;lsr;lsr
@@ -76,7 +76,7 @@ _div_low:
 	clc; adc div_result
 	sta div_result
 
-	//Multiply by 30
+	//Modulo by Multiplying by 30 again
 	txa
 	asl
 	sta mod_result
@@ -84,7 +84,7 @@ _div_low:
 	asl;asl;asl;asl;asl
 	sec; sbc mod_result
 	sta mod_result
-	//Modulo by 30
+	//then subtract low byte with result for reminder
 	tya
 	sec; sbc mod_result
 	sta mod_result

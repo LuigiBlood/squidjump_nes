@@ -292,6 +292,7 @@ _game_platform_display_queue_empty:
 	jmp _game_platform_display_queue_loop
 
 game_scrolling_mgr:
+	//Offset and Reverse Squid Y Position
 	lda squid_y_lo
 	sec; sbc #$20
 	sta temp0
@@ -299,6 +300,8 @@ game_scrolling_mgr:
 	sbc #0
 	sta temp1
 
+	//Divide by 30 and get Quotient (A, temp1) (for PPUCTRL) and Reminder (temp0) (for PPUSCROLL Y)
+	//from tokumaru @ https://forums.nesdev.org/viewtopic.php?p=23266#p23266
 	ldx #$08
 -;
 	cmp #$78
@@ -312,9 +315,8 @@ game_scrolling_mgr:
 
 	sta temp1
 	lda #$F0
-	sec; sbc temp1	
+	sec; sbc temp1
 	sta buf_ppuscroll_y
-
 
 	lda temp0
 	and #1
@@ -329,6 +331,7 @@ game_scrolling_mgr:
 	sta buf_ppuctrl
 +;	inc need_ppu_update
 
+	//Update Nametable
 	lda squid_y_hi
 	sta temp1
 	lda squid_y_lo
