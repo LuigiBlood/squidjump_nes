@@ -1,2 +1,2 @@
 irq:
-	rts
+	rti

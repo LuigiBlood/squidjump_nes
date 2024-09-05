@@ -1,4 +1,5 @@
 nmi:
+	php
 	pha
 	txa
 	pha
@@ -58,5 +59,5 @@ nmi_end:
 	pla
 	tax
 	pla
-
+	plp
 	rti
