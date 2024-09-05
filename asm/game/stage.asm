@@ -20,10 +20,10 @@ game_stage_data:
 	//	01 = Ice Platform
 	//	02 = Moving Platform (Sprite), Moves Right
 	//	03 = Moving Platform (Sprite), Moves Left
-	make_stage_platform($00, $00, $20, $0004)
-	make_stage_platform($01, $13, $0A, $000A)
-	make_stage_platform($00, $03, $09, $000E)
-	make_stage_platform($02, $03, $08, $0014)
+	make_stage_platform($00, $00, $20, $0006)
+	make_stage_platform($01, $13, $0A, $000C)
+	make_stage_platform($00, $03, $09, $0010)
+	make_stage_platform($02, $03, $08, $0016)
 	make_stage_platform($00, $03, $09, $0020)
 	make_stage_platform($00, $13, $09, $0030)
 	db $FF	//End

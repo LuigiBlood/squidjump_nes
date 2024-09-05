@@ -85,6 +85,7 @@ game_update:
 	jsr game_squid_update
 	jsr game_platform_update
 	jsr game_set_oam
+	jsr game_scrolling_mgr
 	rts
 
 game_pal:

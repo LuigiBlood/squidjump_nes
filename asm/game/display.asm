@@ -170,3 +170,42 @@ helper_direct_draw_empty_lines:
 	bne helper_direct_draw_empty_lines
 
 	rts
+
+game_scrolling_mgr:
+	lda squid_y_lo
+	sec; sbc #$20
+	sta temp0
+	lda squid_y_hi
+	sbc #0
+	sta temp1
+
+	ldx #$08
+-;
+	cmp #$78
+	bcc +
+	sbc #$78		//positive
++;
+	rol temp0
+	rol
+	dex
+	bne -
+
+	sta temp1
+	lda #$F0
+	sec; sbc temp1	
+	sta buf_ppuscroll_y
+
+
+	lda temp0
+	and #1
+	bne +
+	lda buf_ppuctrl
+	and #$FC
+	ora #2
+	sta buf_ppuctrl
+	jmp ++
++;	lda buf_ppuctrl
+	and #$FC
+	sta buf_ppuctrl
++;	inc need_ppu_update
+	rts

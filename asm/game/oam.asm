@@ -24,9 +24,7 @@ game_squid_oam:
 	sta oambuf+$04+3,x
 
 	//Y Position (offset by 0xD8, for camera scrolling purposes)
-	lda #$D8
-	clc
-	sbc squid_y_lo
+	lda #$B8-1
 	sta oambuf+$00+0,x
 	sta oambuf+$04+0,x
 

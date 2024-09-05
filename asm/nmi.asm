@@ -21,24 +21,7 @@ nmi:
 	sta OAMDMA
 	stx need_oam_update
 
- +;	//Do PPU Register Update if pending
-	lda need_ppu_update
-	beq +
-
-	lda.b buf_ppumask
-	sta PPUMASK
-	lda.b buf_ppuctrl
-	sta PPUCTRL
-
-	bit PPUSTATUS
-	lda.b buf_ppuscroll_x
-	sta PPUSCROLL
-	lda.b buf_ppuscroll_y
-	sta PPUSCROLL
-
-	stx need_ppu_update
-
- +;	
+ +;
 	//Test Color for Squid
 	setPPUADDR($3F13)
 	lda squid_color
@@ -46,6 +29,25 @@ nmi:
 	lda #0
 	sta PPUADDR
 	sta PPUADDR
+	
+	//Do PPU Register Update if pending
+	lda need_ppu_update
+	beq +
+
+	bit PPUSTATUS
+	lda buf_ppuscroll_x
+	sta PPUSCROLL
+	lda buf_ppuscroll_y
+	sta PPUSCROLL
+
+	lda buf_ppumask
+	sta PPUMASK
+	lda buf_ppuctrl
+	sta PPUCTRL
+
+	stx need_ppu_update
+
+ +;	
 	//Read Joypad
 	jsr read_joy
 	inc frame_count
