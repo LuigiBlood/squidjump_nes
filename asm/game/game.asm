@@ -3,6 +3,7 @@ include "oam.asm"
 include "platform.asm"
 include "collision.asm"
 include "stage.asm"
+include "display.asm"
 
 game_init:
 	ldx #$00
@@ -31,21 +32,23 @@ game_init:
 
 	jsr game_stage_copy
 
-	//Upload to PPU
-	setPPUADDR($2000)
-	lda #$00
-	jsr fill_ppudata100
-	jsr fill_ppudata100
-	jsr fill_ppudata100
-	jsr fill_ppudata100
-	setPPUADDR($2800)
-	lda #$00
-	jsr fill_ppudata100
-	jsr fill_ppudata100
-	jsr fill_ppudata100
-	jsr fill_ppudata100
+	//jsr game_platform_display_start
+	lda #0
+	sta temp1
+	sta temp3
+	sta temp0
+	lda #30
+	sta temp2
+	jsr game_platform_display_direct
 
-	jsr game_platform_display_start
+	lda #0
+	sta temp1
+	sta temp3
+	lda #30
+	sta temp0
+	lda #60
+	sta temp2
+	jsr game_platform_display_direct
 
 	setPPUADDR($3F00); copyPPUDATA(game_pal, $20)
 	sta PPUADDR

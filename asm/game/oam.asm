@@ -23,8 +23,8 @@ game_squid_oam:
 	adc #7
 	sta oambuf+$04+3,x
 
-	//Y Position (offset by 0xE0, for camera scrolling purposes)
-	lda #$E0
+	//Y Position (offset by 0xD8, for camera scrolling purposes)
+	lda #$D8
 	clc
 	sbc squid_y_lo
 	sta oambuf+$00+0,x
@@ -59,7 +59,7 @@ game_platform_oam:
 	lda stgbuf+3,x	//Y Position (offset by 0xF0)
 	asl; asl; asl
 	sta temp1
-	lda #$F0
+	lda #$E8
 	clc; sbc temp1
 	sta temp1
 	lda stgbuf+1,x	//X Pos
