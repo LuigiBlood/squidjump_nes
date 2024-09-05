@@ -5,6 +5,10 @@ setAllocAddr($00)
 	allocate(temp1)				//Temp Variable 1
 	allocate(temp2)				//Temp Variable 2
 	allocate(temp3)				//Temp Variable 3
+	allocate(temp4)				//Temp Variable 4
+	allocate(temp5)				//Temp Variable 5
+	allocate(temp6)				//Temp Variable 6
+	allocate(temp7)				//Temp Variable 7
 
 	allocate(buf_ppuctrl)		//PPUCTRL Write Shadow
 	allocate(buf_ppumask)		//PPUMASK Write Shadow
@@ -20,6 +24,12 @@ setAllocAddr($00)
 	allocate(ppubuf_ptr)		//Current PPU Upload Buffer Pointer
 
 	allocate(frame_count)		//Frame Counter
+
+	allocate(div_result)		//Division Result
+	allocate(mod_result)		//Division Reminder
+	allocate(div_temp)			//Division Temp
+	allocate(div_val_lo)
+	allocate(div_val_hi)
 
 	allocate(player1_prev)		//Joypad 1 Button Data (Held on Previous Frame)
 	allocate(player1_hold)		//Joypad 1 Button Data (Held Buttons)
