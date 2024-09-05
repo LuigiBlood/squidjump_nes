@@ -48,10 +48,13 @@ _checkplatforms:
 	lda squid_y_lo
 	clc
 	adc squid_dy_lo
+	php
 	cmp temp0
 	bcs +
+	plp
 	jmp _skiptonextplatform
 +;	lda squid_y_hi
+	plp
 	adc #0
 	cmp temp1
 	bcs +
