@@ -29,7 +29,12 @@ nmi:
 	lda #0
 	sta PPUADDR
 	sta PPUADDR
-	
+
+	//Do PPU Upload
+	lda need_ppu_upload
+	beq +
+	jsr _ppu_upload
++;
 	//Do PPU Register Update if pending
 	lda need_ppu_update
 	beq +
@@ -63,3 +68,29 @@ nmi_end:
 	pla
 	plp
 	rti
+
+_ppu_upload:
+	lda ppubuf_ptr
+	beq +
+	ldy #0
+_ppu_upload_loop:
+	lda ppubuf+0,y	//Set Addr
+	sta PPUADDR
+	lda ppubuf+1,y
+	sta PPUADDR
+	lda ppubuf+2,y	//Size
+	tax
+	iny;iny;iny
+	//Upload Data
+-;	lda ppubuf,y
+	sta PPUDATA
+	iny
+	dex
+	bne -
+
+	cpy ppubuf_ptr
+	bne _ppu_upload_loop
++;	lda #0
+	sta ppubuf_ptr
+	sta need_ppu_upload
+	rts
