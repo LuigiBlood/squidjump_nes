@@ -47,17 +47,63 @@ game_platform_oam:
 	beq +
 	cmp #$03
 	beq +
--;	//Next Platform
+_game_platform_oam_next:
+	//Next Platform
 	inx;inx;inx;inx;inx
-	jmp --
+	jmp -
 +;
 	//Render Moving Platform
-	lda stgbuf+2,x	//Length in Tiles
-	sta temp0
-	lda stgbuf+3,x	//Y Position (offset by 0xF0)
-	asl; asl; asl
+	//Length in Tiles (max 8 sprites per platform)
+	lda stgbuf+2,x
+	cmp #9
+	bcc +
+	lda #8
++;	sta temp0
+
+	//Calc Y Position (offset by 0xF8)
+	//Convert Tile Y to Pixel Y
+	//temp1 = Low, temp2 = Mid, temp3 = Hi
+	lda #0
+	sta temp2
+	sta temp3
+	lda stgbuf+3,x
+	asl; rol temp2; rol temp3
+	asl; rol temp2; rol temp3
+	asl; rol temp2; rol temp3
 	sta temp1
-	lda #$E8
+	//Platform Y - Squid Y
+	lda temp1
+	sec; sbc squid_y_lo
+	sta temp1
+	lda temp2
+	sbc squid_y_hi
+	sta temp2
+	lda temp3
+	sbc #0
+	sta temp3
+	//Check if platform is close enough to be rendered
+	lda temp3
+	cmp #-1
+	beq +
+	cmp #0
+	beq ++
+	jmp _game_platform_oam_next
+	//handle negative -1
++;	lda temp2
+	cmp #-1
+	bne _game_platform_oam_next
+	lda temp1
+	cmp #-7*8
+	bcc _game_platform_oam_next
+	jmp game_platform_oam_render
++;	//handle 00
+	lda temp2
+	bne _game_platform_oam_next
+	lda temp1
+	cmp #25*8
+	bcs _game_platform_oam_next
+game_platform_oam_render:
+	lda #$C8
 	clc; sbc temp1
 	sta temp1
 	lda stgbuf+1,x	//X Pos
@@ -81,5 +127,5 @@ game_platform_oam:
 	sta temp2
 	dec temp0
 	bne -
-	jmp --
+	jmp _game_platform_oam_next
 	rts

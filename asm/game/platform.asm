@@ -13,6 +13,7 @@ game_platform_update:
 -;	inx;inx;inx;inx;inx
 	jmp --
 _platform2_update:
+	//Moving Platforms to the Right
 	inc stgbuf+1,x
 	ldy squid_stand
 	dey
@@ -27,10 +28,12 @@ _platform2_update:
 	clc; adc stgbuf+1,x
 	cmp #$F0
 	bne +
+	//if on the right side, then change to Left
 	inc stgbuf+0,x
 +;	jmp -
 	rts
 _platform3_update:
+	//Moving Platforms to the Left
 	dec stgbuf+1,x
 	ldy squid_stand
 	dey
@@ -43,6 +46,7 @@ _platform3_update:
 +;	lda stgbuf+1,x
 	cmp #$10
 	bne +
+	//if on the left side, then change to Right
 	dec stgbuf+0,x
 +;	jmp -
 	rts

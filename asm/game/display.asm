@@ -53,6 +53,17 @@ _game_platform_display_direct_loop:
 	sbc #0
 	sta temp3
 
+	//Don't display certain platforms
+	lda stgbuf+0,x
+	cmp #$02
+	beq +
+	cmp #$03
+	beq +
+	jmp ++
+
++;	dex;dex;dex;dex;dex
+	jmp _game_platform_display_direct_empty
++;
 	lda stgbuf+4,x
 	cmp temp3		//>= Upper Tile
 	bne _game_platform_display_direct_empty
@@ -211,6 +222,17 @@ _game_platform_display_queue_loop:
 	lda temp3
 	sbc #0
 	sta temp3
+
+	//Don't display certain platforms
+	lda stgbuf+0,x
+	cmp #$02
+	beq +
+	cmp #$03
+	beq +
+	jmp ++
++;	dex;dex;dex;dex;dex
+	jmp _game_platform_display_queue_empty
++;
 
 	lda stgbuf+4,x
 	cmp temp3		//>= Upper Tile
