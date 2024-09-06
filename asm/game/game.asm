@@ -86,14 +86,15 @@ game_update:
 	jsr game_platform_update
 	jsr game_set_oam
 	jsr game_scrolling_mgr
+	jsr game_spr0_effect
 	rts
 
 game_pal:
-	db $01, $17, $27, $30	//BG 0 (Dirt)
+	db $01, $17, $27, $01	//BG 0 (Dirt)
 	db $01, $11, $21, $30	//BG 1 (Ice)
 	db $01, $17, $27, $30	//BG 2
 	db $01, $17, $27, $30	//BG 3
 	db $01, $0F, $00, $30	//SPR0
 	db $01, $0F, $21, $30	//SPR1 (Moving Platform)
 	db $01, $00, $10, $30	//SPR2
-	db $01, $00, $10, $30	//SPR3
+	db $01, $00, $10, $01	//SPR3

@@ -46,14 +46,20 @@ _update:
 	//Update Game Frame
 	jsr update_game_mode
 	//Wait for NMI to update again
-	inc wait_nmi
- -;	lda wait_nmi
+	inc.b wait_nmi
+	jsr game_spr0_effect
+ -;	lda.b wait_nmi
 	bne -
-	jmp _update
+	lda.b first_game_frame
+	bne +
+	inc.b first_game_frame
++;	jmp _update
 
 init_game_mode:
 	//Initialize Game Mode
 	//Argument: A = Game Mode
+	ldx #0
+	stx.b first_game_frame
 	sta.b game_mode
 	cmp #$00
 	bne +

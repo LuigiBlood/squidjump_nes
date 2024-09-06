@@ -1,8 +1,23 @@
 game_set_oam:
 	jsr empty_oambuffer
+	jsr game_set_spr0
 	jsr game_squid_oam
 	jsr game_platform_oam
 	inc need_oam_update
+	rts
+
+game_set_spr0:
+	ldx.b oambuf_ptr
+	lda.b frame_count
+	sta oambuf+$00,x
+	lda #$FE
+	sta oambuf+$01,x
+	lda #$23
+	sta oambuf+$02,x
+	lda #$00
+	sta oambuf+$03,x
+	inx;inx;inx;inx;
+	stx.b oambuf_ptr
 	rts
 
 game_squid_oam:

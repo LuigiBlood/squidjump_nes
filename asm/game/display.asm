@@ -77,6 +77,9 @@ _game_platform_display_direct_platform:
 	sta temp4
 	beq +
 	tay
+	lda #$FF
+	sta PPUDATA
+	dey
 	lda #0
 -;	sta PPUDATA
 	dey
@@ -109,6 +112,9 @@ _game_platform_display_direct_platform:
 	jmp _game_platform_display_direct_loop
 _game_platform_display_direct_empty:
 	ldy #32
+	lda #$FF
+	sta PPUDATA
+	dey
 	lda #0
 -;	sta PPUDATA
 	dey
@@ -250,6 +256,10 @@ _game_platform_display_queue_platform:
 	txa
 	pha
 	ldx ppubuf_ptr
+	lda #$FF
+	sta ppubuf,x
+	inx
+	dey
 	lda #0
 -;	sta ppubuf,x
 	inx
@@ -303,6 +313,10 @@ _game_platform_display_queue_empty:
 	txa
 	pha
 	ldx ppubuf_ptr
+	lda #$FF
+	sta ppubuf,x
+	inx
+	dey
 	lda #0
 -;	sta ppubuf,x
 	inx
@@ -408,3 +422,21 @@ game_scrolling_mgr:
 	inc need_ppu_upload
 _game_scrolling_mgr_end:
 	rts
+
+game_spr0_effect:
+	lda.b first_game_frame
+	beq +
+	lda oambuf
+	beq +
+	cmp #$F0
+	bcs +
+	ldy #0
+	ldx buf_ppuscroll_y
+	lda #$BF
+-;	bit PPUSTATUS
+	bvc -
+	sta PPUMASK
+	sty PPUSCROLL
+	stx PPUSCROLL
+	sty.b enable_raster
++;	rts

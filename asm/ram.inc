@@ -24,6 +24,7 @@ setAllocAddr($00)
 	allocate(ppubuf_ptr)		//Current PPU Upload Buffer Pointer
 
 	allocate(frame_count)		//Frame Counter
+	allocate(first_game_frame)	//First Game Frame has been rendered flag
 
 	allocate(div_result)		//Division Result
 	allocate(mod_result)		//Division Reminder
