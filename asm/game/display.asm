@@ -427,16 +427,47 @@ game_spr0_effect:
 	lda.b first_game_frame
 	beq +
 	lda oambuf
-	beq +
-	cmp #$F0
+	cmp #8
+	bcc +
+	cmp #$EC
 	bcs +
-	ldy #0
-	ldx buf_ppuscroll_y
+	ldy buf_ppumask
 	lda #$BF
 -;	bit PPUSTATUS
 	bvc -
 	sta PPUMASK
-	sty PPUSCROLL
-	stx PPUSCROLL
-	sty.b enable_raster
+	sty PPUMASK
+	sta PPUMASK
+	sty PPUMASK
+	sta PPUMASK
+	sty PPUMASK
+	sta PPUMASK
+	sty PPUMASK
+	sta PPUMASK
+	sty PPUMASK
+	sta PPUMASK
+	sty PPUMASK
+	sta PPUMASK
+	sty PPUMASK
+	sta PPUMASK
+	sty PPUMASK
+	sta PPUMASK
+	nop
+	sta PPUMASK
+	sty PPUMASK
+	sta PPUMASK
+	sty PPUMASK
+	sta PPUMASK
+	sty PPUMASK
+	sta PPUMASK
+	sty PPUMASK
+	sta PPUMASK
+	sty PPUMASK
+	sta PPUMASK
+	sty PPUMASK
+	sta PPUMASK
+	sty PPUMASK
+	sta PPUMASK
+	sty PPUMASK
+	sta PPUMASK
 +;	rts

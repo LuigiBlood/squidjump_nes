@@ -9,6 +9,7 @@ game_set_oam:
 game_set_spr0:
 	ldx.b oambuf_ptr
 	lda.b frame_count
+	eor #$FF
 	sta oambuf+$00,x
 	lda #$FE
 	sta oambuf+$01,x
