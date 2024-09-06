@@ -1,7 +1,7 @@
 empty_oambuffer:
 	//Zero OAM Buffer
 	lda #$00
-	sta oambuf_ptr
+	sta.b oambuf_ptr
 	tax
  -;	sta oambuf,x
 	inx
@@ -21,26 +21,26 @@ division16bit_by_30:
 	//Divide by 30
 	//Base From Omegamatrix @ https://forums.nesdev.org/viewtopic.php?p=129849#p129849
 	lda.b div_val_hi
-	sta.b div_temp
+	sta.b mod_result
 	lda.b div_val_lo
 
-	//use div_temp for high byte temp
+	//use mod_result for high byte temp
 	//use div_result for low byte temp
 	sta.b div_result		//@3
-	lsr.b div_temp; ror		//@5+2
-	lsr.b div_temp; ror		//@5+2
-	lsr.b div_temp; ror		//@5+2
-	lsr.b div_temp; ror		//@5+2
+	lsr.b mod_result; ror		//@5+2
+	lsr.b mod_result; ror		//@5+2
+	lsr.b mod_result; ror		//@5+2
+	lsr.b mod_result; ror		//@5+2
 	sec						//@2
 	adc.b div_result		//@3
 	bcc +					//@2(+1)
-	inc.b div_temp			//@5
+	inc.b mod_result			//@5
 +;
-	lsr.b div_temp; ror		//@5+2
-	lsr.b div_temp; ror		//@5+2
-	lsr.b div_temp; ror		//@5+2
-	lsr.b div_temp; ror		//@5+2
-	lsr.b div_temp; ror		//@5+2
+	lsr.b mod_result; ror		//@5+2
+	lsr.b mod_result; ror		//@5+2
+	lsr.b mod_result; ror		//@5+2
+	lsr.b mod_result; ror		//@5+2
+	lsr.b mod_result; ror		//@5+2
 	sta.b div_result
 
 	//Subtract low byte with result*30 for reminder

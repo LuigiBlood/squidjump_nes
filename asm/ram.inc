@@ -27,7 +27,6 @@ setAllocAddr($00)
 
 	allocate(div_result)		//Division Result
 	allocate(mod_result)		//Division Reminder
-	allocate(div_temp)			//Division Temp
 	allocate(div_val_lo)
 	allocate(div_val_hi)
 
