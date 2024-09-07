@@ -47,7 +47,6 @@ _update:
 	jsr update_game_mode
 	//Wait for NMI to update again
 	inc.b wait_nmi
-	jsr game_spr0_effect
  -;	lda.b wait_nmi
 	bne -
 	lda.b first_game_frame

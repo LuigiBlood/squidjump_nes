@@ -429,10 +429,10 @@ game_spr0_effect:
 	lda oambuf
 	cmp #8
 	bcc +
-	cmp #$EC
+	cmp #$EC-1
 	bcs +
 	ldy buf_ppumask
-	lda #$BF
+	lda #%10111111
 -;	bit PPUSTATUS
 	bvc -
 	sta PPUMASK
