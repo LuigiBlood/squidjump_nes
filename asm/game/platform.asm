@@ -15,14 +15,14 @@ game_platform_update:
 _platform2_update:
 	//Moving Platforms to the Right
 	inc stgbuf+1,x
-	ldy squid_stand
+	ldy.b squid_stand
 	dey
 	tya
 	cmp stgbuf+0,x
 	bne +
-	cpx squid_stand_ptr
+	cpx.b squid_stand_ptr
 	bne +
-	inc squid_x_int
+	inc.b squid_x_int
 +;	lda stgbuf+2,x
 	asl;asl;asl
 	clc; adc stgbuf+1,x
@@ -35,14 +35,14 @@ _platform2_update:
 _platform3_update:
 	//Moving Platforms to the Left
 	dec stgbuf+1,x
-	ldy squid_stand
+	ldy.b squid_stand
 	dey
 	tya
 	cmp stgbuf+0,x
 	bne +
-	cpx squid_stand_ptr
+	cpx.b squid_stand_ptr
 	bne +
-	dec squid_x_int
+	dec.b squid_x_int
 +;	lda stgbuf+1,x
 	cmp #$10
 	bne +
