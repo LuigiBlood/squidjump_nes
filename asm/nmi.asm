@@ -8,57 +8,57 @@ nmi:
 
 	//Skip NMI if game frame update isn't done yet
 	ldx #$00
-	lda wait_nmi
+	lda.b wait_nmi
 	bne +
 	jmp nmi_end
 
  +;	//Do OAM Update if pending
-	lda need_oam_update
+	lda.b need_oam_update
 	beq +
 
 	stx OAMADDR
 	lda #(oambuf >> 8)
 	sta OAMDMA
-	stx need_oam_update
+	stx.b need_oam_update
 
  +;
 	//Test Color for Squid
 	setPPUADDR($3F13)
-	lda squid_color
+	lda.b squid_color
 	sta PPUDATA
 	lda #0
 	sta PPUADDR
 	sta PPUADDR
 
 	//Do PPU Upload
-	lda need_ppu_upload
+	lda.b need_ppu_upload
 	beq +
 	jsr _ppu_upload
 +;
 	//Do PPU Register Update if pending
-	lda need_ppu_update
+	lda.b need_ppu_update
 	beq +
 
 	bit PPUSTATUS
-	lda buf_ppuscroll_x
+	lda.b buf_ppuscroll_x
 	sta PPUSCROLL
-	lda buf_ppuscroll_y
+	lda.b buf_ppuscroll_y
 	sta PPUSCROLL
 
-	lda buf_ppumask
+	lda.b buf_ppumask
 	sta PPUMASK
-	lda buf_ppuctrl
+	lda.b buf_ppuctrl
 	sta PPUCTRL
 
-	stx need_ppu_update
+	stx.b need_ppu_update
 
  +;	
 	//Read Joypad
 	jsr read_joy
-	inc frame_count
+	inc.b frame_count
 	//Let next frame be managed
 	lda #$00
-	sta wait_nmi
+	sta.b wait_nmi
 
 nmi_end:
 	pla
@@ -70,7 +70,7 @@ nmi_end:
 	rti
 
 _ppu_upload:
-	lda ppubuf_ptr
+	lda.b ppubuf_ptr
 	beq +
 	ldy #0
 _ppu_upload_loop:
@@ -88,9 +88,9 @@ _ppu_upload_loop:
 	dex
 	bne -
 
-	cpy ppubuf_ptr
+	cpy.b ppubuf_ptr
 	bne _ppu_upload_loop
 +;	lda #0
-	sta ppubuf_ptr
-	sta need_ppu_upload
+	sta.b ppubuf_ptr
+	sta.b need_ppu_upload
 	rts
