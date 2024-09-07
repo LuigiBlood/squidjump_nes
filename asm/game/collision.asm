@@ -21,32 +21,40 @@ _skiptonextplatform:
 	tax
 	jmp -
 _checkplatforms:
-	//Get Platform Y Tile Position and convert to pixel based
-	lda stgbuf+3,x
-	asl; asl; asl
-	sta temp0
-	lda stgbuf+3,x
-	lsr; lsr; lsr; lsr; lsr
+	//Get Platform Y Tile Position and convert to Platform Y Pixel Position for temp0 and Platform Y Pixel Position + DY for temp2
+	lda #0
 	sta temp1
+	lda stgbuf+3,x
+	asl; rol temp1
+	asl; rol temp1
+	asl; rol temp1
+	sta temp0
+	clc; adc squid_dy_lo
+	php
+	sta temp2
 	lda stgbuf+4,x
 	asl; asl; asl
 	ora temp1
 	sta temp1
-	//Compare Y <= Platform Y Pixel Position
+	plp
+	adc #0
+	sta temp3
+	//Compare Y <= Platform Y Pixel Position + DY
 	lda squid_y_lo
-	cmp temp0
+	cmp temp2
 	bcc +
 	beq +
 	jmp _skiptonextplatform
 +;	lda squid_y_hi
-	cmp temp1
+	cmp temp3
 	bcc +
 	beq +
 	jmp _skiptonextplatform
 +;
 	//Compare Y + DY >= Platform Y Pixel Position
+	lda squid_y_frac
+	clc;adc squid_dy_frac
 	lda squid_y_lo
-	clc
 	adc squid_dy_lo
 	php
 	cmp temp0
@@ -91,6 +99,7 @@ _checkplatforms:
 	lda temp1
 	sta squid_y_hi
 	lda #0
+	sta squid_y_frac
 	sta squid_dy_lo
 	sta squid_dy_frac
 	lda stgbuf+0,x
