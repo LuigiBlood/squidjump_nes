@@ -32,19 +32,9 @@ game_init:
 
 	jsr game_stage_copy
 
-	//jsr game_platform_display_start
 	lda #0
 	sta temp1
 	sta temp3
-	sta temp0
-	lda #30
-	sta temp2
-	jsr game_platform_display_direct
-
-	lda #0
-	sta temp1
-	sta temp3
-	lda #30
 	sta temp0
 	lda #60
 	sta temp2
@@ -86,9 +76,9 @@ game_update:
 	jsr game_platform_update
 	jsr game_set_oam
 	jsr game_scrolling_mgr
-	jsr game_spr0_effect
-	jsr game_spr0_effect
-	jsr game_spr0_effect
+	//jsr game_spr0_effect
+	//jsr game_spr0_effect
+	//jsr game_spr0_effect
 	rts
 
 game_pal:

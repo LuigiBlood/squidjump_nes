@@ -1,135 +1,57 @@
+constant temp_y_lower_lo = temp0
+constant temp_y_lower_hi = temp1
+
+constant temp_y_upper_lo = temp2
+constant temp_y_upper_hi = temp3
+
+constant temp_ppuaddr_lo = temp4
+constant temp_ppuaddr_hi = temp5
+
+constant temp_tile_max = temp4
+
+constant temp_write = temp6
+constant temp_stg_idx = temp7
+
 game_platform_display_direct:
 	//Arguments:
 	//temp0 & 1 = Stage Y Lower Tile Position (16-bit LE)
 	//temp2 & 3 = Stage Y Upper Tile Position (16-bit LE), not included
-	//Extras:
-	//temp4 & 5 = PPU Address & Other
-	//temp6     = Pointer to lowest platform within range
-	//temp7     = Pointer to highest platform within range
-
-	ldx #-5
-	//Step: Find the highest platform before the upper tile position
--;	inx;inx;inx;inx;inx;
-	lda stgbuf+0,x
-	cmp #$FF
-	bne +
-	jmp ++
-
-+;	lda stgbuf+4,x
-	cmp temp3		//>= Upper Tile
-	bcc -
-	lda stgbuf+3,x
-	cmp temp2		//>= Upper Tile
-	bcc -
-+;	dex;dex;dex;dex;dex
-	stx temp7
-
-	//Step: Set PPUADDR
-+;
-	jsr helper_get_PPUADDR
-	lda temp5
-	sta PPUADDR
-	lda temp4
-	sta PPUADDR
-
-	//Step: Draw from highest to lowest (can have empty lines)
-
-	//Find platform at Y specific position, if not found, then draw empty line
-	//-1
-	ldx temp7
-_game_platform_display_direct_loop:
-	lda temp3
-	cmp temp1
-	bne +
-	lda temp2
-	cmp temp0
-	bne +
-	rts
-+;
-	lda temp2
-	sec; sbc #1
-	sta temp2
-	lda temp3
-	sbc #0
-	sta temp3
-
-	//Don't display certain platforms
-	lda stgbuf+0,x
-	cmp #$02
-	beq +
-	cmp #$03
-	beq +
-	jmp ++
-
-+;	dex;dex;dex;dex;dex
-	jmp _game_platform_display_direct_empty
-+;
-	lda stgbuf+4,x
-	cmp temp3		//>= Upper Tile
-	bne _game_platform_display_direct_empty
-	lda stgbuf+3,x
-	cmp temp2		//>= Upper Tile
-	bne _game_platform_display_direct_empty
-_game_platform_display_direct_platform:
-	//Left of platform (if any)
-	lda stgbuf+1,x
-	lsr;lsr;lsr
-	sta temp4
-	beq +
-	tay
-	lda #$FF
-	sta PPUDATA
-	dey
-	lda #0
--;	sta PPUDATA
-	dey
-	bne -
-+;	//Platform itself
-	lda stgbuf+2,x
+-;
+	lda temp_y_lower_hi
 	pha
-	clc; adc temp4
-	sta temp4
+	lda temp_y_lower_lo
+	pha
+	lda temp_y_upper_lo
+	sec; sbc #2
+	sta temp_y_lower_lo
+	lda temp_y_upper_hi
+	sbc #0
+	sta temp_y_lower_hi
+	jsr game_platform_display_queue
+	jsr game_platform_attr_display_queue
+	jsr _ppu_upload
 	pla
-	beq +
-	tay
-	lda #6
-	clc
-	adc stgbuf+0,x
-	adc stgbuf+0,x
--;	sta PPUDATA
-	dey
+	sta temp_y_lower_lo
+	pla
+	sta temp_y_lower_hi
+
+	lda temp_y_lower_lo
+	cmp temp_y_upper_lo
 	bne -
-+;	//After platform
-	ldy temp4
-	lda #0
--;	cpy #$20
-	beq +
-	sta PPUDATA
-	iny
-	jmp -
-+;
-	dex;dex;dex;dex;dex
-	jmp _game_platform_display_direct_loop
-_game_platform_display_direct_empty:
-	ldy #32
-	lda #$FF
-	sta PPUDATA
-	dey
-	lda #0
--;	sta PPUDATA
-	dey
+	lda temp_y_lower_hi
+	cmp temp_y_upper_hi
 	bne -
-	jmp _game_platform_display_direct_loop
+
++;	rts
 
 
 helper_get_PPUADDR:
 	//Divide the Upper range - 1 by 30 to calculate the address
-	lda temp2
-	sec
-	sbc #1
+	lda temp_y_upper_lo
+	sec; sbc #1
 	sta div_val_lo
-	lda temp3
-	sbc temp1
+	lda temp_y_upper_hi
+	sbc temp_y_lower_hi
 	sta div_val_hi
 
 	txa
@@ -138,30 +60,44 @@ helper_get_PPUADDR:
 	pla
 	tax
 
+	//Set Addr to Attr
+	lda mod_result	//$23F8 - (mod / 4)
+	clc;adc #2
+	asl;
+	and #%00111000
+	sta temp_attr_lo
+	lda #$F8
+	sec; sbc temp_attr_lo
+	sta temp_attr_lo
+
 	//Set PPUAddr
 	lda #0
-	sta temp5
-	lda mod_result
-	asl; rol temp5
-	asl; rol temp5
-	asl; rol temp5
-	asl; rol temp5
-	asl; rol temp5
-	sta temp4
+	sta temp_ppuaddr_hi
+	lda mod_result	//$23A0 - (mod * 32)
+	asl; rol temp_ppuaddr_hi
+	asl; rol temp_ppuaddr_hi
+	asl; rol temp_ppuaddr_hi
+	asl; rol temp_ppuaddr_hi
+	asl; rol temp_ppuaddr_hi
+	sta temp_ppuaddr_lo
 	lda #$A0
-	sec; sbc temp4
-	sta temp4
+	sec; sbc temp_ppuaddr_lo
+	sta temp_ppuaddr_lo
 	lda #$23
-	sbc temp5
-	sta temp5
+	sta temp_attr_hi
+	sbc temp_ppuaddr_hi
+	sta temp_ppuaddr_hi
 	
 	lda div_result
 	lsr
 	bcc +
 	//Handle other nametable
-	lda temp5
+	lda temp_ppuaddr_hi
 	ora #8
-	sta	temp5
+	sta	temp_ppuaddr_hi
+	lda temp_attr_hi
+	ora #8
+	sta temp_attr_hi
 +;
 	rts
 
@@ -169,10 +105,6 @@ game_platform_display_queue:
 	//Arguments:
 	//temp0 & 1 = Stage Y Lower Tile Position (16-bit LE)
 	//temp2 & 3 = Stage Y Upper Tile Position (16-bit LE), not included
-	//Extras:
-	//temp4 & 5 = PPU Address & Other
-	//temp6     = Pointer to lowest platform within range
-	//temp7     = Pointer to highest platform within range
 
 	ldx #-5
 	//Step: Find the highest platform before the upper tile position
@@ -183,27 +115,27 @@ game_platform_display_queue:
 	jmp ++
 
 +;	lda stgbuf+4,x
-	cmp temp3		//>= Upper Tile
+	cmp temp_y_upper_hi		//>= Upper Tile
 	bcc -
 	lda stgbuf+3,x
-	cmp temp2		//>= Upper Tile
+	cmp temp_y_upper_lo		//>= Upper Tile
 	bcc -
 +;	dex;dex;dex;dex;dex
-	stx temp7
+	stx temp_stg_idx
 
 	//Step: Set PPUADDR
 +;
 	jsr helper_get_PPUADDR
 	//Set Address to Buffer
 	ldy ppubuf_ptr
-	lda temp5
+	lda temp_ppuaddr_hi
 	sta ppubuf,y; iny
-	lda temp4
+	lda temp_ppuaddr_lo
 	sta ppubuf,y; iny
 
 	//Set Size to Buffer
-	lda temp2
-	sec; sbc temp0
+	lda temp_y_upper_lo
+	sec; sbc temp_y_lower_lo
 	asl;asl;asl;asl;asl
 	sta ppubuf,y; iny
 	sty ppubuf_ptr
@@ -212,22 +144,22 @@ game_platform_display_queue:
 
 	//Find platform at Y specific position, if not found, then draw empty line
 	//-1
-	ldx temp7
+	ldx temp_stg_idx
 _game_platform_display_queue_loop:
-	lda temp3
-	cmp temp1
+	lda temp_y_upper_hi
+	cmp temp_y_lower_hi
 	bne +
-	lda temp2
-	cmp temp0
+	lda temp_y_upper_lo
+	cmp temp_y_lower_lo
 	bne +
 	rts
 +;
-	lda temp2
+	lda temp_y_upper_lo
 	sec; sbc #1
-	sta temp2
-	lda temp3
+	sta temp_y_upper_lo
+	lda temp_y_upper_hi
 	sbc #0
-	sta temp3
+	sta temp_y_upper_hi
 
 	//Don't display certain platforms
 	lda stgbuf+0,x
@@ -241,73 +173,12 @@ _game_platform_display_queue_loop:
 +;
 
 	lda stgbuf+4,x
-	cmp temp3		//>= Upper Tile
+	cmp temp_y_upper_hi		//>= Upper Tile
 	bne _game_platform_display_queue_empty
 	lda stgbuf+3,x
-	cmp temp2		//>= Upper Tile
+	cmp temp_y_upper_lo		//>= Upper Tile
 	bne _game_platform_display_queue_empty
-_game_platform_display_queue_platform:
-	//Left of platform (if any)
-	lda stgbuf+1,x
-	lsr;lsr;lsr
-	sta temp4
-	beq +
-	tay
-	txa
-	pha
-	ldx ppubuf_ptr
-	lda #$FF
-	sta ppubuf,x
-	inx
-	dey
-	lda #0
--;	sta ppubuf,x
-	inx
-	dey
-	bne -
-	stx ppubuf_ptr
-	pla
-	tax
-+;	//Platform itself
-	lda stgbuf+2,x
-	tay
-	clc; adc temp4
-	sta temp4
-	beq +
-	lda #6
-	clc
-	adc stgbuf+0,x
-	adc stgbuf+0,x
-	sta temp6
-	txa
-	pha
-	ldx ppubuf_ptr
-	lda temp6
--;	sta ppubuf,x
-	inx
-	dey
-	bne -
-	stx ppubuf_ptr
-	pla
-	tax
-+;	//After platform
-	ldy temp4
-	txa
-	pha
-	ldx ppubuf_ptr
-	lda #0
--;	cpy #$20
-	beq +
-	sta ppubuf,x
-	inx
-	iny
-	jmp -
-+;
-	stx ppubuf_ptr
-	pla
-	tax
-	dex;dex;dex;dex;dex
-	jmp _game_platform_display_queue_loop
+	jmp _game_platform_display_queue_platform
 _game_platform_display_queue_empty:
 	ldy #32
 	txa
@@ -326,15 +197,119 @@ _game_platform_display_queue_empty:
 	pla
 	tax
 	jmp _game_platform_display_queue_loop
+_game_platform_display_queue_platform:
+	lda stgbuf+0,x
+	sta last_display_p
+	//Left of platform (if any)
+	lda stgbuf+1,x
+	lsr;lsr;lsr
+	sta temp_tile_max
+	beq +
+	tay
+	txa
+	pha
+	ldx ppubuf_ptr
+	lda #$FF
+	sta ppubuf,x
+	inx
+	dey
+	lda #0
+-;	sta ppubuf,x
+	inx
+	dey
+	bne -
+	stx ppubuf_ptr
+	pla
+	tax
++;	//Platform itself
+	lda stgbuf+2,x
+	tay
+	clc; adc temp_tile_max
+	sta temp_tile_max
+	beq +
+	lda #6
+	clc
+	adc stgbuf+0,x
+	adc stgbuf+0,x
+	sta temp_write
+	txa
+	pha
+	ldx ppubuf_ptr
+	lda temp_write
+-;	sta ppubuf,x
+	inx
+	dey
+	bne -
+	stx ppubuf_ptr
+	pla
+	tax
++;	//After platform
+	ldy temp_tile_max
+	txa
+	pha
+	ldx ppubuf_ptr
+	lda #0
+-;	cpy #$20
+	beq +
+	sta ppubuf,x
+	inx
+	iny
+	jmp -
++;
+	stx ppubuf_ptr
+	pla
+	tax
+	dex;dex;dex;dex;dex
+	jmp _game_platform_display_queue_loop
+
+game_platform_attr_display_queue:
+	lda last_display_p
+	cmp #$FF
+	bne +
+	lda #0
++;	asl;asl;asl
+	tay
+
+	ldx ppubuf_ptr
+	lda temp_attr_hi
+	sta ppubuf,x; inx
+	lda temp_attr_lo
+	sta ppubuf,x; inx
+	lda #8
+	sta ppubuf,x; inx
+
+	lda platform_attr_table+0,y
+	sta ppubuf,x; inx
+	lda platform_attr_table+1,y
+	sta ppubuf,x; inx
+	lda platform_attr_table+2,y
+	sta ppubuf,x; inx
+	lda platform_attr_table+3,y
+	sta ppubuf,x; inx
+	lda platform_attr_table+4,y
+	sta ppubuf,x; inx
+	lda platform_attr_table+5,y
+	sta ppubuf,x; inx
+	lda platform_attr_table+6,y
+	sta ppubuf,x; inx
+	lda platform_attr_table+7,y
+	sta ppubuf,x; inx
+
+	stx ppubuf_ptr
+	rts
+
+platform_attr_table:
+	db $00,$00,$00,$00,$00,$00,$00,$00
+	db $44,$55,$55,$55,$55,$55,$55,$55
 
 game_scrolling_mgr:
 	//Offset and Reverse Squid Y Position
 	lda squid_y_lo
 	sec; sbc #$20
-	sta temp0
+	sta temp_y_lower_lo
 	lda squid_y_hi
 	sbc #0
-	sta temp1
+	sta temp_y_lower_hi
 
 	//Divide by 30 and get Quotient (A, temp1) (for PPUCTRL) and Reminder (temp0) (for PPUSCROLL Y)
 	//from tokumaru @ https://forums.nesdev.org/viewtopic.php?p=23266#p23266
@@ -344,24 +319,24 @@ game_scrolling_mgr:
 	bcc +
 	sbc #$78		//positive
 +;
-	rol temp0
+	rol temp_y_lower_lo
 	rol
 	dex
 	bne -
 
-	sta temp1
+	sta temp_y_lower_hi
 	lda #$F0
-	sec; sbc temp1
+	sec; sbc temp_y_lower_hi
 	cmp #$F0
 	bne +
 	//weird hacky workaround but it works
-	lda temp0
+	lda temp_y_lower_lo
 	eor #1
-	sta temp0
+	sta temp_y_lower_lo
 	lda #0
 +;	sta buf_ppuscroll_y
 	
-	lda temp0
+	lda temp_y_lower_lo
 	and #1
 	bne +
 	lda buf_ppuctrl
@@ -376,49 +351,50 @@ game_scrolling_mgr:
 
 	//Update Nametable
 	lda squid_y_hi
-	sta temp1
+	sta temp_y_lower_hi
 	lda squid_y_lo
-	lsr temp1; ror
-	lsr temp1; ror
-	lsr temp1; ror
-	lsr temp1; ror
-	asl; rol temp1
-	sta temp0
+	lsr temp_y_lower_hi; ror
+	lsr temp_y_lower_hi; ror
+	lsr temp_y_lower_hi; ror
+	lsr temp_y_lower_hi; ror
+	asl; rol temp_y_lower_hi
+	sta temp_y_lower_lo
 
 	lda squid_dy_lo
 	beq _game_scrolling_mgr_end
 	bpl +
 	//Positive
-	lda temp0
+	lda temp_y_lower_lo
 	clc; adc #32
-	sta temp0
-	lda temp1
+	sta temp_y_lower_lo
+	lda temp_y_lower_hi
 	adc #0
-	sta temp1
+	sta temp_y_lower_hi
 
-	lda temp0
+	lda temp_y_lower_lo
 	clc; adc #2
-	sta temp2
-	lda temp1
+	sta temp_y_upper_lo
+	lda temp_y_lower_hi
 	adc #0
-	sta temp3
+	sta temp_y_upper_hi
 	jmp ++
 +;	//Negative
 
-	lda temp0
+	lda temp_y_lower_lo
 	sec; sbc #4
-	sta temp2	
-	lda temp1
+	sta temp_y_upper_lo	
+	lda temp_y_lower_hi
 	sbc #0
-	sta temp3
+	sta temp_y_upper_hi
 
-	lda temp2
+	lda temp_y_upper_lo
 	sec; sbc #2
-	sta temp0	
-	lda temp3
+	sta temp_y_lower_lo	
+	lda temp_y_upper_hi
 	sbc #0
-	sta temp1
+	sta temp_y_lower_hi
 +;	jsr game_platform_display_queue
+	jsr game_platform_attr_display_queue
 	inc need_ppu_upload
 _game_scrolling_mgr_end:
 	rts

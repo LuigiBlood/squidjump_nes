@@ -15,6 +15,10 @@ setAllocAddr($00)
 	allocate(buf_ppuscroll_x)	//PPUSCROLL Write Shadow (1)
 	allocate(buf_ppuscroll_y)	//PPUSCROLL Write Shadow (2)
 
+	allocate(last_display_p)		//Last Displayed Platform
+	allocate(temp_attr_lo)			//PPUADDR to Attr line
+	allocate(temp_attr_hi)			//PPUADDR to Attr line
+
 	allocate(wait_nmi)			//Waiting for NMI flag
 	allocate(need_oam_update)	//Flag to upload OAM on next NMI
 	allocate(need_ppu_update)	//Flag to update PPU Registers on next NMI
