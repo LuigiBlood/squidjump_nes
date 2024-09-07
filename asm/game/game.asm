@@ -86,7 +86,9 @@ game_update:
 	jsr game_platform_update
 	jsr game_set_oam
 	jsr game_scrolling_mgr
-	//jsr game_spr0_effect
+	jsr game_spr0_effect
+	jsr game_spr0_effect
+	jsr game_spr0_effect
 	rts
 
 game_pal:
