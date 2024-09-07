@@ -1,70 +1,9 @@
 game_squid_update:
-	//Apply Gravity
-	lda squid_dy_frac
-	clc
-	adc #$40
-	sta squid_dy_frac
-	lda squid_dy_lo
-	adc #0
-	sta squid_dy_lo
-
-	//Fall Speed Cap
-	lda squid_dy_lo
-	cmp #$01
-	bmi +
-	bcc +
-	lda squid_dy_frac
-	//cmp #$80
-	bpl +
-	lda #$01
-	sta squid_dy_lo
-	lda #$80
-	sta squid_dy_frac
-
-+;	//Horizontal Movement (Friction, Moving Platform)
-	lda squid_stand
-	beq _game_squid_update_end
-_game_squid_update_stand0:
-	//Platform Type 0 (Just remove all horizontal movement)
-	cmp #0+1
-	bne _game_squid_update_stand1
--;
-	lda #0
-	sta squid_dx_frac
-	sta squid_dx_int
-	jmp _game_squid_update_end
-_game_squid_update_stand1:
-	//Platform Type 1 (Ice, add a bit of slowdown)
-	cmp #1+1
-	bne _game_squid_update_stand2
-	lda squid_dx_int
-	ora squid_dx_frac
-	beq _game_squid_update_end
-	lda squid_dx_int
-	bmi +
-	//Positive
-	lda squid_dx_frac
-	sec
-	sbc #$04
-	sta squid_dx_frac
-	lda squid_dx_int
-	sbc #0
-	sta squid_dx_int
-	jmp _game_squid_update_end
-	//Negative
-+;	lda squid_dx_frac
-	clc
-	adc #$04
-	sta squid_dx_frac
-	lda squid_dx_int
-	adc #0
-	sta squid_dx_int
-	jmp _game_squid_update_end
-_game_squid_update_stand2:
-	jmp -
-_game_squid_update_end:
 	jsr squid_joypad
 	jsr squid_anim
+	
+	jsr game_squid_gravity
+	jsr game_squid_h_friction
 	jsr game_squid_collision
 	jsr apply_delta_physics_x
 	jsr apply_delta_physics_y
@@ -189,6 +128,76 @@ squid_anim_end:
 
 squid_anim_color:
 	db $30, $35, $26, $16, $27
+
+game_squid_gravity:
+	//Apply Gravity
+	lda squid_dy_frac
+	clc
+	adc #$40
+	sta squid_dy_frac
+	lda squid_dy_lo
+	adc #0
+	sta squid_dy_lo
+
+	//Fall Speed Cap
+	lda squid_dy_lo
+	cmp #$01
+	bmi +
+	bcc +
+	lda squid_dy_frac
+	//cmp #$80
+	bpl +
+	lda #$01
+	sta squid_dy_lo
+	lda #$80
+	sta squid_dy_frac
+
++;	rts
+
+game_squid_h_friction:
+	//Horizontal Movement (Friction, Moving Platform)
+	lda squid_stand
+	beq _game_squid_h_friction_end
+_game_squid_h_friction_stand0:
+	//Platform Type 0 (Just remove all horizontal movement)
+	cmp #0+1
+	bne _game_squid_h_friction_stand1
+-;
+	lda #0
+	sta squid_dx_frac
+	sta squid_dx_int
+	jmp _game_squid_h_friction_end
+_game_squid_h_friction_stand1:
+	//Platform Type 1 (Ice, add a bit of slowdown)
+	cmp #1+1
+	bne _game_squid_update_stand2
+	lda squid_dx_int
+	ora squid_dx_frac
+	beq _game_squid_h_friction_end
+	lda squid_dx_int
+	bmi +
+	//Positive
+	lda squid_dx_frac
+	sec
+	sbc #$04
+	sta squid_dx_frac
+	lda squid_dx_int
+	sbc #0
+	sta squid_dx_int
+	jmp _game_squid_h_friction_end
+	//Negative
++;	lda squid_dx_frac
+	clc
+	adc #$04
+	sta squid_dx_frac
+	lda squid_dx_int
+	adc #0
+	sta squid_dx_int
+	jmp _game_squid_h_friction_end
+_game_squid_update_stand2:
+	jmp -
+_game_squid_h_friction_end:
+	rts
 
 apply_delta_physics_x:
 	//Apply Acceleration to Position
