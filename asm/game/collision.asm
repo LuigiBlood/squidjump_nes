@@ -1,8 +1,14 @@
+constant temp_platform_y_pixel_lo = temp0
+constant temp_platform_y_pixel_hi = temp1
+
+constant temp_platform_dy_pixel_lo = temp2
+constant temp_platform_dy_pixel_hi = temp3
+
 game_squid_collision:
 	//Only do collision checks when going down
 	lda #0
-	sta squid_stand
-	lda squid_dy_lo
+	sta.b squid_stand
+	lda.b squid_dy_lo
 	bpl +
 	rts
  +;
@@ -23,70 +29,69 @@ _skiptonextplatform:
 _checkplatforms:
 	//Get Platform Y Tile Position and convert to Platform Y Pixel Position for temp0 and Platform Y Pixel Position + DY for temp2
 	lda #0
-	sta temp1
+	sta.b temp_platform_y_pixel_hi
 	lda stgbuf+3,x
-	asl; rol temp1
-	asl; rol temp1
-	asl; rol temp1
-	sta temp0
-	clc; adc squid_dy_lo
+	asl; rol.b temp_platform_y_pixel_hi
+	asl; rol.b temp_platform_y_pixel_hi
+	asl; rol.b temp_platform_y_pixel_hi
+	sta.b temp_platform_y_pixel_lo
+	clc; adc.b squid_dy_lo
 	php
-	sta temp2
+	sta.b temp_platform_dy_pixel_lo
 	lda stgbuf+4,x
 	asl; asl; asl
-	ora temp1
-	sta temp1
+	ora.b temp_platform_y_pixel_hi
+	sta.b temp_platform_y_pixel_hi
 	plp
 	adc #0
-	sta temp3
+	sta.b temp_platform_dy_pixel_hi
 	//Compare Y <= Platform Y Pixel Position + DY
-	lda squid_y_lo
-	cmp temp2
+	lda.b squid_y_lo
+	cmp.b temp_platform_dy_pixel_lo
 	bcc +
 	beq +
 	jmp _skiptonextplatform
-+;	lda squid_y_hi
-	cmp temp3
++;	lda.b squid_y_hi
+	cmp.b temp_platform_dy_pixel_hi
 	bcc +
 	beq +
 	jmp _skiptonextplatform
 +;
 	//Compare Y + DY >= Platform Y Pixel Position
-	lda squid_y_frac
-	clc;adc squid_dy_frac
-	lda squid_y_lo
-	adc squid_dy_lo
+	lda.b squid_y_frac
+	clc;adc.b squid_dy_frac
+	lda.b squid_y_lo
+	adc.b squid_dy_lo
 	php
-	cmp temp0
+	cmp.b temp_platform_y_pixel_lo
 	bcs +
 	plp
 	jmp _skiptonextplatform
-+;	lda squid_y_hi
++;	lda.b squid_y_hi
 	plp
 	adc #0
-	cmp temp1
+	cmp.b temp_platform_y_pixel_hi
 	bcs +
 	jmp _skiptonextplatform
 +;
 	//Prepare Platform Pixel Positions
 	lda stgbuf+1,x	//Left X
 	lsr; lsr; lsr
-	//sta temp2
 	clc
 	adc stgbuf+2,x	//Right X
 	asl; asl; asl
 	bcc +
 	lda #$ff	//If it's more than 255, cap it
-+;	sta temp3
++;	sta temp_platform_dy_pixel_hi
 	//Compare X (Leftmost Hitbox) <= Platform X Rightmost Pixel Position
-	lda squid_x_int
-	cmp temp3
+	lda.b squid_x_int
+	cmp.b temp_platform_dy_pixel_hi
 	bcc +
 	beq +
 	jmp _skiptonextplatform
 +;
 	//Compare X (Rightmost Hitbox) > Platform X Leftmost Pixel Position
-	lda squid_x_int
+	lda.b squid_x_int
 	clc
 	adc #15
 	cmp stgbuf+1,x
@@ -94,17 +99,17 @@ _checkplatforms:
 	jmp _skiptonextplatform
 +;
 	//If both are true, then stop any downwards acceleration
-	lda temp0
-	sta squid_y_lo
-	lda temp1
-	sta squid_y_hi
+	lda.b temp_platform_y_pixel_lo
+	sta.b squid_y_lo
+	lda.b temp_platform_y_pixel_hi
+	sta.b squid_y_hi
 	lda #0
-	sta squid_y_frac
-	sta squid_dy_lo
-	sta squid_dy_frac
+	sta.b squid_y_frac
+	sta.b squid_dy_lo
+	sta.b squid_dy_frac
 	lda stgbuf+0,x
 	clc
 	adc #1
-	sta squid_stand
-	stx squid_stand_ptr
+	sta.b squid_stand
+	stx.b squid_stand_ptr
 	rts
