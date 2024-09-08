@@ -3,7 +3,7 @@ game_set_oam:
 	jsr game_set_spr0
 	jsr game_squid_oam
 	jsr game_platform_oam
-	inc need_oam_update
+	inc.b need_oam_update
 	rts
 
 game_set_spr0:
@@ -23,8 +23,8 @@ game_set_spr0:
 
 game_squid_oam:
 	//Sprite Look
-	ldx oambuf_ptr
-	lda squid_display
+	ldx.b oambuf_ptr
+	lda.b squid_display
 	asl
 	ora #$80
 	sta oambuf+$00+1,x
@@ -33,7 +33,7 @@ game_squid_oam:
 	sta oambuf+$00+2,x
 
 	//X Position
-	lda squid_x_int
+	lda.b squid_x_int
 	sta oambuf+$00+3,x
 	clc
 	adc #7
@@ -46,17 +46,23 @@ game_squid_oam:
 
 	txa
 	clc; adc #8
-	sta oambuf_ptr
+	sta.b oambuf_ptr
 	rts
+
+constant temp_oam_length = temp0
+constant temp_oam_platform_y_lo = temp1
+constant temp_oam_platform_y_md = temp2
+constant temp_oam_platform_y_hi = temp3
+constant temp_oam_platform_x_shift = temp2
 
 game_platform_oam:
 	ldx #0	//X = Stage Buffer
-	ldy oambuf_ptr	//Y = OAM Buffer
+	ldy.b oambuf_ptr	//Y = OAM Buffer
 
 -;	lda stgbuf+0,x
 	cmp #$FF
 	bne +
-	sty oambuf_ptr
+	sty.b oambuf_ptr
 	rts
 +;
 	cmp #$02
@@ -79,73 +85,71 @@ _game_platform_oam:
 	cmp #9
 	bcc +
 	lda #8
-+;	sta temp0
++;	sta.b temp_oam_length
 
-	//Calc Y Position (offset by 0xF8)
+	//Calc Y Position
 	//Convert Tile Y to Pixel Y
 	//temp1 = Low, temp2 = Mid, temp3 = Hi
 	lda #0
-	sta temp2
-	sta temp3
+	sta.b temp_oam_platform_y_md
+	sta.b temp_oam_platform_y_hi
 	lda stgbuf+3,x
-	asl; rol temp2; rol temp3
-	asl; rol temp2; rol temp3
-	asl; rol temp2; rol temp3
-	sta temp1
+	asl; rol.b temp_oam_platform_y_md; rol.b temp_oam_platform_y_hi
+	asl; rol.b temp_oam_platform_y_md; rol.b temp_oam_platform_y_hi
+	asl; rol.b temp_oam_platform_y_md; rol.b temp_oam_platform_y_hi
+	sta.b temp_oam_platform_y_lo
 	//Platform Y - Squid Y
-	lda temp1
-	sec; sbc squid_y_lo
-	sta temp1
-	lda temp2
-	sbc squid_y_hi
-	sta temp2
-	lda temp3
+	lda.b temp_oam_platform_y_lo
+	sec; sbc.b squid_y_lo
+	sta.b temp_oam_platform_y_lo
+	lda.b temp_oam_platform_y_md
+	sbc.b squid_y_hi
+	sta.b temp_oam_platform_y_md
+	lda.b temp_oam_platform_y_hi
 	sbc #0
-	sta temp3
+	sta.b temp_oam_platform_y_hi
 	//Check if platform is close enough to be rendered
-	lda temp3
+	lda.b temp_oam_platform_y_hi
 	cmp #-1
 	beq +
 	cmp #0
 	beq ++
 	jmp _game_platform_oam_next
 	//handle negative -1
-+;	lda temp2
++;	lda.b temp_oam_platform_y_md
 	cmp #-1
 	bne _game_platform_oam_next
-	lda temp1
+	lda.b temp_oam_platform_y_lo
 	cmp #-7*8
 	bcc _game_platform_oam_next
 	jmp game_platform_oam_render
 +;	//handle 00
-	lda temp2
+	lda.b temp_oam_platform_y_md
 	bne _game_platform_oam_next
-	lda temp1
+	lda.b temp_oam_platform_y_lo
 	cmp #25*8
 	bcs _game_platform_oam_next
 game_platform_oam_render:
 	lda stgbuf+0,x
+	lsr
+	cmp #$01
+	beq +
 	cmp #$02
-	beq +
-	cmp #$03
-	beq +
-	cmp #$04
 	beq ++
-	cmp #$05
-	beq ++
-+;	jmp game_platform_oam_render_2_3
-+;	jmp game_platform_oam_render_4_5
-game_platform_oam_render_2_3:
+	jmp _game_platform_oam_next
++;	jmp _game_platform_oam_render_2_3
++;	jmp _game_platform_oam_render_4_5
+_game_platform_oam_render_2_3:
 	lda #$C8
-	clc; sbc temp1
-	sta temp1
+	clc; sbc.b temp_oam_platform_y_lo
+	sta.b temp_oam_platform_y_lo
 	lda stgbuf+1,x	//X Pos
-	sta temp2
--;	lda temp2
+	sta.b temp_oam_platform_x_shift
+-;	lda.b temp_oam_platform_x_shift
 	//X Position
 	sta oambuf+3,y
 	//Y Position (Temp)
-	lda temp1
+	lda.b temp_oam_platform_y_lo
 	sta oambuf+0,y
 	//Sprite
 	lda #10
@@ -155,40 +159,41 @@ game_platform_oam_render_2_3:
 	sta oambuf+2,y
 	//Next
 	iny;iny;iny;iny
-	lda temp2
+	lda.b temp_oam_platform_x_shift
 	clc; adc #8
-	sta temp2
-	dec temp0
+	sta.b temp_oam_platform_x_shift
+	dec.b temp_oam_length
 	bne -
 	jmp _game_platform_oam_next
-game_platform_oam_render_4_5:
-	cmp #$05
-	beq +
-	lda frame_count
+_game_platform_oam_render_4_5:
+	lda stgbuf+0,x
+	lsr
+	bcs +
+	lda.b frame_count
 	and #7
 	sec; sbc #8
 	jmp ++
-+;	lda frame_count
++;	lda.b frame_count
 	and #7
 	eor #$FF
 	clc; adc #1
-+;	sta temp2
++;	sta.b temp_oam_platform_x_shift
 
 	and #8
 	beq +
-	inc temp0
+	inc.b temp_oam_length
 +;
 	lda #$C8
-	clc; sbc temp1
-	sta temp1
+	clc; sbc.b temp_oam_platform_y_lo
+	sta.b temp_oam_platform_y_lo
 	lda stgbuf+1,x	//X Pos
-	clc; adc.b temp2
-	sta temp2
--;	lda temp2
+	clc; adc.b temp_oam_platform_x_shift
+	sta.b temp_oam_platform_x_shift
+-;	lda.b temp_oam_platform_x_shift
 	//X Position
 	sta oambuf+3,y
 	//Y Position (Temp)
-	lda temp1
+	lda.b temp_oam_platform_y_lo
 	sta oambuf+0,y
 	//Sprite
 	lda #12
@@ -198,10 +203,10 @@ game_platform_oam_render_4_5:
 	sta oambuf+2,y
 	//Next
 	iny;iny;iny;iny
-	lda temp2
+	lda.b temp_oam_platform_x_shift
 	clc; adc #8
-	sta temp2
-	dec temp0
+	sta.b temp_oam_platform_x_shift
+	dec.b temp_oam_length
 	bne -
 	jmp _game_platform_oam_next
 
