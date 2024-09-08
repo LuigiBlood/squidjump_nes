@@ -1,5 +1,4 @@
 @echo off
-echo Assembling code... (Squid Jump)
-"./tools/bass/bass" build.asm
-echo Done.
-pause
+echo Assembling code... (Cartridge)
+"./tools/bass/bass" build_nes.asm
+IF ERRORLEVEL 1 pause
