@@ -200,6 +200,12 @@ _game_platform_display_queue_empty:
 _game_platform_display_queue_platform:
 	lda stgbuf+0,x
 	sta.b last_display_p
+	cmp #$00
+	beq +
+	cmp #$01
+	beq +
+	jmp _game_platform_display_queue_platform_4_5
++;
 	//Left of platform (if any)
 	lda stgbuf+1,x
 	lsr;lsr;lsr
@@ -261,6 +267,58 @@ _game_platform_display_queue_platform:
 	tax
 	dex;dex;dex;dex;dex
 	jmp _game_platform_display_queue_loop
+_game_platform_display_queue_platform_4_5:
+	lda stgbuf+1,x
+	lsr;lsr;lsr
+	sta.b temp_tile_max
+	beq +
+	tay
+	txa
+	pha
+	ldx.b ppubuf_ptr
+	lda #$FF
+-;	sta ppubuf,x
+	inx
+	dey
+	bne -
+	stx.b ppubuf_ptr
+	pla
+	tax
+	lda stgbuf+2,x
+	tay
+	clc; adc.b temp_tile_max
+	sta.b temp_tile_max
+	beq +
+	lda #0
+	txa
+	pha
+	ldx.b ppubuf_ptr
+	lda #$00
+-;	sta ppubuf,x
+	inx
+	dey
+	bne -
+	stx.b ppubuf_ptr
+	pla
+	tax
+
+	ldy.b temp_tile_max
+	txa
+	pha
+	ldx.b ppubuf_ptr
+	lda #$FF
+-;	cpy #$20
+	beq +
+	sta ppubuf,x
+	inx
+	iny
+	jmp -
++;
+	stx.b ppubuf_ptr
+	pla
+	tax
+	dex;dex;dex;dex;dex
+	jmp _game_platform_display_queue_loop
 
 game_platform_attr_display_queue:
 	lda.b last_display_p
@@ -299,8 +357,12 @@ game_platform_attr_display_queue:
 	rts
 
 platform_attr_table:
-	db $00,$00,$00,$00,$00,$00,$00,$00
-	db $44,$55,$55,$55,$55,$55,$55,$55
+	db $00,$00,$00,$00,$00,$00,$00,$00	//00
+	db $44,$55,$55,$55,$55,$55,$55,$55	//01
+	db $00,$00,$00,$00,$00,$00,$00,$00	//02
+	db $00,$00,$00,$00,$00,$00,$00,$00	//03
+	db $00,$00,$00,$00,$00,$00,$00,$00	//04
+	db $00,$00,$00,$00,$00,$00,$00,$00	//05
 
 game_scrolling_mgr:
 	//Offset and Reverse Squid Y Position

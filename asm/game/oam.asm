@@ -63,11 +63,16 @@ game_platform_oam:
 	beq +
 	cmp #$03
 	beq +
+	cmp #$04
+	beq +
+	cmp #$05
+	beq +
 _game_platform_oam_next:
 	//Next Platform
 	inx;inx;inx;inx;inx
 	jmp -
 +;
+_game_platform_oam:
 	//Render Moving Platform
 	//Length in Tiles (max 8 sprites per platform)
 	lda stgbuf+2,x
@@ -119,6 +124,18 @@ _game_platform_oam_next:
 	cmp #25*8
 	bcs _game_platform_oam_next
 game_platform_oam_render:
+	lda stgbuf+0,x
+	cmp #$02
+	beq +
+	cmp #$03
+	beq +
+	cmp #$04
+	beq ++
+	cmp #$05
+	beq ++
++;	jmp game_platform_oam_render_2_3
++;	jmp game_platform_oam_render_4_5
+game_platform_oam_render_2_3:
 	lda #$C8
 	clc; sbc temp1
 	sta temp1
@@ -144,4 +161,44 @@ game_platform_oam_render:
 	dec temp0
 	bne -
 	jmp _game_platform_oam_next
-	rts
+game_platform_oam_render_4_5:
+	inc temp0
+	cmp #$05
+	beq +
+	lda frame_count
+	and #7
+	sec; sbc #8
+	jmp ++
++;	lda frame_count
+	and #7
+	eor #$FF
+	clc; adc #1
++;	sta temp2
+
+	lda #$C8
+	clc; sbc temp1
+	sta temp1
+	lda stgbuf+1,x	//X Pos
+	clc; adc.b temp2
+	sta temp2
+-;	lda temp2
+	//X Position
+	sta oambuf+3,y
+	//Y Position (Temp)
+	lda temp1
+	sta oambuf+0,y
+	//Sprite
+	lda #12
+	sta oambuf+1,y
+	//Attributes (Palette)
+	lda #$22
+	sta oambuf+2,y
+	//Next
+	iny;iny;iny;iny
+	lda temp2
+	clc; adc #8
+	sta temp2
+	dec temp0
+	bne -
+	jmp _game_platform_oam_next
+

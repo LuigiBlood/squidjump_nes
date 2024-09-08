@@ -10,6 +10,10 @@ game_platform_update:
 	beq _platform2_update
 	cmp #$03
 	beq _platform3_update
+	cmp #$04
+	beq _platform4_update
+	cmp #$05
+	beq _platform5_update
 -;	inx;inx;inx;inx;inx
 	jmp --
 _platform2_update:
@@ -50,3 +54,25 @@ _platform3_update:
 	dec stgbuf+0,x
 +;	jmp -
 	rts
+_platform4_update:
+	ldy.b squid_stand
+	dey
+	tya
+	cmp stgbuf+0,x
+	bne +
+	cpx.b squid_stand_ptr
+	bne +
+	inc.b squid_x_int
++;
+	jmp -
+_platform5_update:
+	ldy.b squid_stand
+	dey
+	tya
+	cmp stgbuf+0,x
+	bne +
+	cpx.b squid_stand_ptr
+	bne +
+	dec.b squid_x_int
++;
+	jmp -

@@ -88,5 +88,5 @@ game_pal:
 	db $01, $17, $27, $30	//BG 3
 	db $01, $0F, $00, $30	//SPR0
 	db $01, $0F, $21, $30	//SPR1 (Moving Platform)
-	db $01, $00, $10, $30	//SPR2
+	db $01, $2D, $3D, $38	//SPR2 (Conveyor Belt)
 	db $01, $00, $10, $01	//SPR3
