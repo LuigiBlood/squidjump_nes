@@ -1,0 +1,6 @@
+/res
+/temp
+/roms
+*.nes
+*.fds
+*.lnk
