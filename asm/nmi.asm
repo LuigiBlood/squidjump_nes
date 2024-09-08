@@ -22,7 +22,7 @@ nmi:
 	stx.b need_oam_update
 
  +;
-	//Test Color for Squid
+	//Update Color for Squid
 	setPPUADDR($3F13)
 	lda.b squid_color
 	sta PPUDATA
@@ -34,6 +34,7 @@ nmi:
 	lda.b need_ppu_upload
 	beq +
 	jsr _ppu_upload
+	stx.b need_ppu_upload
 +;
 	//Do PPU Register Update if pending
 	lda.b need_ppu_update
@@ -92,5 +93,4 @@ _ppu_upload_loop:
 	bne _ppu_upload_loop
 +;	lda #0
 	sta.b ppubuf_ptr
-	sta.b need_ppu_upload
 	rts
