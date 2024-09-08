@@ -162,7 +162,6 @@ game_platform_oam_render_2_3:
 	bne -
 	jmp _game_platform_oam_next
 game_platform_oam_render_4_5:
-	inc temp0
 	cmp #$05
 	beq +
 	lda frame_count
@@ -175,6 +174,10 @@ game_platform_oam_render_4_5:
 	clc; adc #1
 +;	sta temp2
 
+	and #8
+	beq +
+	inc temp0
++;
 	lda #$C8
 	clc; sbc temp1
 	sta temp1
