@@ -37,6 +37,11 @@ reset:
 	inx
 	bne -
 
+	if {defined FDSVERSION} {
+	lda #$C0
+	sta $0100
+	}
+
 _start:
 	//Set Game Mode
 	lda #$01
