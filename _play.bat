@@ -1,1 +1,0 @@
-".\tools\Mesen\Mesen.exe" ".\squidjump.nes"
