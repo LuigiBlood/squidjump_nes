@@ -27,11 +27,17 @@ game_squid_oam:
 	//Sprite Graphics
 	lda.b squid_display
 	asl
-	ora #$80
+	tay
+
+	lda _game_squid_oam_table_chr+0,y
 	sta oambuf+$00+1,x
+	lda _game_squid_oam_table_chr+1,y
 	sta oambuf+$04+1,x
-	lda #$40
+
+	lda _game_squid_oam_table_attr+0,y
 	sta oambuf+$00+2,x
+	lda _game_squid_oam_table_attr+1,y
+	sta oambuf+$04+2,x
 
 	//X Position
 	lda.b squid_x_int
@@ -50,6 +56,14 @@ game_squid_oam:
 	clc; adc #4*2
 	sta.b oambuf_ptr
 	rts
+
+_game_squid_oam_table_chr:
+	db $80, $80,  $82, $82,  $84, $84,  $86, $86
+	db $88, $88,  $8A, $8C,  $80, $80,  $8C, $8A
+
+_game_squid_oam_table_attr:
+	db $40, $00,  $40, $00,  $40, $00,  $40, $00
+	db $40, $00,  $00, $00,  $C0, $80,  $40, $40
 
 constant temp_oam_length = temp0
 constant temp_oam_platform_y_lo = temp1
