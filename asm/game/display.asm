@@ -463,15 +463,28 @@ _game_scrolling_mgr_end:
 
 game_spr0_effect:
 	lda.b first_game_frame
-	beq +
-	lda oambuf
+	bne +
+-;	rts
++;	lda oambuf+0
 	cmp #8
-	bcc +
+	bcc -
 	cmp #$EC-1
-	bcs +
+	bcs -
+
+	//Waste Time when paused to prevent the effect to go wrong
+	lda.b game_state
+	cmp #1
+	bne +
+	ldx #$FF
+-;	dex
+	nop
+	nop
+	bne -
++;
 	ldy.b buf_ppumask
 	lda #%10111111
 -;	bit PPUSTATUS
+	bmi -
 	bvc -
 	sta $3F01
 	sty $3E01
@@ -508,4 +521,77 @@ game_spr0_effect:
 	sta $3F01
 	sty $3E01
 	sta $3F01
-+;	rts
+	nop
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	nop
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	nop
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	nop
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	sty $3E01
+	sta $3F01
+	nop
+	rts

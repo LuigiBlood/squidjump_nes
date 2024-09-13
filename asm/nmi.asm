@@ -56,7 +56,11 @@ nmi:
  +;	
 	//Read Joypad
 	jsr read_joy
+	lda.b game_state
+	cmp #1
+	beq +
 	inc.b frame_count
++;
 	//Let next frame be managed
 	lda #$00
 	sta.b wait_nmi

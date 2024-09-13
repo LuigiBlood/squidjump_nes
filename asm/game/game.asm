@@ -4,6 +4,7 @@ include "platform.asm"
 include "collision.asm"
 include "stage.asm"
 include "display.asm"
+include "poison.asm"
 
 game_init:
 	ldx #$00
@@ -29,6 +30,10 @@ game_init:
 	lda #$80
 	sta squid_x_int
 	sta squid_y_lo
+
+	sta poison_y_lo
+	dex
+	stx poison_y_hi
 
 	jsr game_stage_copy
 
@@ -71,22 +76,37 @@ game_init:
 
 	rts
 
+game_joypad_mgr:
+	lda.b player1_push
+	and #$10
+	beq +
+	lda.b game_state
+	eor #1
+	sta.b game_state
++
+	rts
+
 game_update:
+	jsr game_joypad_mgr
+	lda game_state
+	cmp #1
+	beq +
 	jsr game_squid_update
 	jsr game_platform_update
+	jsr game_poison_update
 	jsr game_set_oam
 	jsr game_scrolling_mgr
-	//jsr game_spr0_effect
-	//jsr game_spr0_effect
-	//jsr game_spr0_effect
+	+;
+	inc.b need_ppu_update
+	jsr game_spr0_effect
 	rts
 
 game_pal:
-	db $01, $17, $27, $01	//BG 0 (Dirt)
+	db $01, $17, $27, $01	//BG 0 (Dirt, Sprite 0 Hit)
 	db $01, $11, $21, $30	//BG 1 (Ice)
 	db $01, $17, $27, $30	//BG 2
 	db $01, $17, $27, $30	//BG 3
-	db $01, $0F, $00, $30	//SPR0
-	db $01, $0F, $21, $30	//SPR1 (Moving Platform)
-	db $01, $2D, $3D, $38	//SPR2 (Conveyor Belt)
-	db $01, $00, $10, $01	//SPR3
+	db $01, $0F, $00, $30	//SPR0 Grey (Squid)
+	db $01, $11, $21, $30	//SPR1 Blue (Moving Platform)
+	db $01, $2D, $3D, $38	//SPR2 Grey, Yellow Tint (Conveyor Belt)
+	db $01, $16, $27, $30	//SPR3 Red

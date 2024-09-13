@@ -40,6 +40,7 @@ setAllocAddr($00)
 	allocate(player1_push)		//Joypad 1 Button Data (Pressed Buttons)
 
 	allocate(game_mode)			//Game Mode (handles management of code)
+	allocate(game_state)		//Game State (0: Normal, 1: Pause)
 
 	allocate(title_select)		//Title Screen Option Selection
 
@@ -57,6 +58,10 @@ setAllocAddr($00)
 	allocate(squid_dx_int)		//Squid: Delta X Movement (Pixel)
 	allocate(squid_dy_frac)		//Squid: Delta Y Movement (Subpixel)
 	allocate(squid_dy_lo)		//Squid: Delta Y Movement (Pixel)
+
+	allocate(poison_y_lo)		//Poison Water: Y Position (Pixel)
+	allocate(poison_y_hi)		//Poison Water: Y Position (Pixel)
+
 
 setAllocAddr($0200)
 	allocate(oambuf)	//OAM Buffer, $100 bytes

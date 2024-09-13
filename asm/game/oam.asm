@@ -8,9 +8,36 @@ game_set_oam:
 
 game_set_spr0:
 	ldx.b oambuf_ptr
-	lda.b frame_count
-	eor #$FF
+	stx oambuf+0
+	lda.b poison_y_lo
+	sec; sbc.b squid_y_lo
+	pha
+	lda.b poison_y_hi
+	sbc.b squid_y_hi
+	beq _game_set_spr0_pos
+	cmp #-1
+	beq _game_set_spr0_neg
+	pla
+	jmp _game_set_spr0_end
+_game_set_spr0_neg:
+	pla
+	cmp #-1
+	beq +
+	cmp #-7*8
+	bcs +
+	jmp _game_set_spr0_end
+_game_set_spr0_pos:
+	pla
+	beq +
+	cmp #10*8
+	bcc +
+	jmp _game_set_spr0_end
++;
+	sta.b temp0
+	lda #$B8-1
+	sec; sbc.b temp0
 	sta oambuf+$00,x
+_game_set_spr0_end:
 	lda #$FE
 	sta oambuf+$01,x
 	lda #$23
