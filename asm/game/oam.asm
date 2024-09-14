@@ -9,28 +9,28 @@ game_set_oam:
 game_set_spr0:
 	ldx.b oambuf_ptr
 	stx oambuf+0
-	lda.b poison_y_lo
-	sec; sbc.b squid_y_lo
-	pha
-	lda.b poison_y_hi
-	sbc.b squid_y_hi
-	beq _game_set_spr0_pos
-	cmp #-1
-	beq _game_set_spr0_neg
+	lda.b poison_y_lo		// \
+	sec; sbc.b squid_y_lo	// |
+	pha						// | Subtract Poison Water Y with Squid Y
+	lda.b poison_y_hi		// |
+	sbc.b squid_y_hi		// /
+	beq _game_set_spr0_pos	// * Check if value is positive (00** only, beyond that, don't manage it)
+	cmp #-1					// \
+	beq _game_set_spr0_neg	// / Check if value is negative (FF** only, beyond that, don't manage it)
 	pla
 	jmp _game_set_spr0_end
 _game_set_spr0_neg:
-	pla
-	cmp #-1
-	beq +
-	cmp #-7*8
-	bcs +
+	pla						// \
+	cmp #-1					// |
+	beq +					// | Check if value is between -1 to -7*8, if so, then place Sprite 0 Y
+	cmp #-7*8				// |
+	bcs +					// /
 	jmp _game_set_spr0_end
 _game_set_spr0_pos:
-	pla
-	beq +
-	cmp #10*8
-	bcc +
+	pla						// \
+	beq +					// | Check if value is between 0 and 10*8, if so, then place Sprite 0 Y
+	cmp #10*8				// |
+	bcc +					// /
 	jmp _game_set_spr0_end
 +;
 	sta.b temp0
