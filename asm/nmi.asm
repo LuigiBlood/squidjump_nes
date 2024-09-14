@@ -60,6 +60,10 @@ nmi:
 	cmp #1
 	beq +
 	inc.b frame_count
+	lda.b countdown
+	beq +
+	sec; sbc #1
+	sta.b countdown
 +;
 	//Let next frame be managed
 	lda #$00

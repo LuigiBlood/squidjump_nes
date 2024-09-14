@@ -4,7 +4,28 @@ constant temp_platform_y_pixel_hi = temp1
 constant temp_platform_dy_pixel_lo = temp2
 constant temp_platform_dy_pixel_hi = temp3
 
-game_squid_collision:
+game_squid_collision_poison:
+	lda.b squid_y_lo
+	sec; sbc.b poison_y_lo
+	sta.b temp0
+	lda.b squid_y_hi
+	sbc.b poison_y_hi
+	sta.b temp1
+	beq +
+	rts
++;	lda.b temp0
+	cmp #16
+	bcc +
+	rts
++;	lda #2
+	sta.b game_state
+	lda #60
+	sta.b countdown
+	lda #5
+	sta.b squid_display
+	rts
+
+game_squid_collision_platform:
 	//Only do collision checks when going down
 	lda #0
 	sta.b squid_stand

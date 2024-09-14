@@ -4,9 +4,10 @@ game_squid_update:
 	
 	jsr game_squid_gravity
 	jsr game_squid_h_friction
-	jsr game_squid_collision
+	jsr game_squid_collision_platform
 	jsr apply_delta_physics_x
 	jsr apply_delta_physics_y
+	jsr game_squid_collision_poison
 	rts
 
 squid_joypad:

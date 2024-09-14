@@ -15,9 +15,9 @@ setAllocAddr($00)
 	allocate(buf_ppuscroll_x)	//PPUSCROLL Write Shadow (1)
 	allocate(buf_ppuscroll_y)	//PPUSCROLL Write Shadow (2)
 
-	allocate(last_display_p)		//Last Displayed Platform
-	allocate(temp_attr_lo)			//PPUADDR to Attr line
-	allocate(temp_attr_hi)			//PPUADDR to Attr line
+	allocate(last_display_p)	//Last Displayed Platform
+	allocate(temp_attr_lo)		//PPUADDR to Attr line
+	allocate(temp_attr_hi)		//PPUADDR to Attr line
 
 	allocate(wait_nmi)			//Waiting for NMI flag
 	allocate(need_oam_update)	//Flag to upload OAM on next NMI
@@ -28,19 +28,20 @@ setAllocAddr($00)
 	allocate(ppubuf_ptr)		//Current PPU Upload Buffer Pointer
 
 	allocate(frame_count)		//Frame Counter
+	allocate(countdown)			//Frame Countdown
 	allocate(first_game_frame)	//First Game Frame has been rendered flag
 
 	allocate(div_result)		//Division Result
 	allocate(mod_result)		//Division Reminder
-	allocate(div_val_lo)
-	allocate(div_val_hi)
+	allocate(div_val_lo)		//Value to divide
+	allocate(div_val_hi)		//Value to divide
 
 	allocate(player1_prev)		//Joypad 1 Button Data (Held on Previous Frame)
 	allocate(player1_hold)		//Joypad 1 Button Data (Held Buttons)
 	allocate(player1_push)		//Joypad 1 Button Data (Pressed Buttons)
 
 	allocate(game_mode)			//Game Mode (handles management of code)
-	allocate(game_state)		//Game State (0: Normal, 1: Pause)
+	allocate(game_state)		//Game State (0: Normal, 1: Pause, 2: Lost)
 
 	allocate(title_select)		//Title Screen Option Selection
 

@@ -12,6 +12,8 @@ game_init:
 	stx PPUMASK	//Disable Rendering
 
 	//Init RAM
+	stx game_state
+	stx countdown
 	stx frame_count
 
 	stx squid_display
@@ -86,19 +88,35 @@ game_joypad_mgr:
 +
 	rts
 
+game_lose_state_mgr:
+	lda.b game_state
+	cmp #2
+	bne +
+	lda.b countdown
+	bne +
+	lda #$01
+	jsr init_game_mode
++;	rts
+
 game_update:
 	jsr game_joypad_mgr
-	lda game_state
+	lda.b game_state
 	cmp #1
+	beq ++
+	cmp #2
 	beq +
+
 	jsr game_squid_update
 	jsr game_platform_update
 	jsr game_poison_update
-	jsr game_set_oam
 	jsr game_scrolling_mgr
-	+;
++;
+	jsr game_set_oam
++;
 	inc.b need_ppu_update
 	jsr game_spr0_effect
+
+	jsr game_lose_state_mgr
 	rts
 
 game_pal:
